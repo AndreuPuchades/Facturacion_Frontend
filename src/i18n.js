@@ -1,0 +1,140 @@
+import { createI18n } from 'vue-i18n'
+
+const messages = {
+  es: {
+    common: {
+      save: 'Guardar',
+      update: 'Actualizar',
+      cancel: 'Cancelar',
+      delete: 'Eliminar',
+      edit: 'Editar',
+      previous: 'Anterior',
+      next: 'Siguiente',
+      page: 'Página',
+      of: 'de',
+      search: 'Buscar',
+      filter: 'Filtrar',
+      reset: 'Restablecer',
+      confirm: 'Confirmar',
+      date: 'Fecha',
+      amount: 'Cantidad',
+      description: 'Descripción',
+      category: 'Categoría',
+      company: 'Empresa',
+      recurring: 'Recurrente'
+    },
+    incomes: {
+      title: 'Ingresos',
+      new: 'Añadir Ingreso',
+      edit: 'Editar Ingreso',
+      close: 'Cerrar Formulario',
+      search: 'Buscar ingreso...',
+      allCategories: 'Todas las categorías',
+      filters: {
+        show: 'Mostrar filtros',
+        hide: 'Ocultar filtros',
+        reset: 'Restablecer filtros',
+        dateRange: 'Rango de fechas',
+        amountRange: 'Rango de importes',
+        recurring: 'Solo ingresos recurrentes',
+        taxDeductible: 'Solo ingresos deducibles',
+        max: 'Máximo',
+        min: 'Mínimo',
+        to: 'a'
+      },
+      form: {
+        new: 'Nuevo Ingreso',
+        edit: 'Editar Ingreso',
+        amount: 'Cantidad',
+        date: 'Fecha',
+        description: 'Descripción',
+        category: 'Categoría',
+        selectCategory: 'Selecciona una categoría',
+        taxDeductible: 'El impuesto es deducible',
+        recurring: 'Es recurrente',
+        recurrenceFrequency: 'Frecuencia de recurrencia',
+        daily: 'Diario',
+        weekly: 'Semanal',
+        monthly: 'Mensual',
+        yearly: 'Anual'
+      },
+      deleteConfirmation: {
+        title: 'Confirmar eliminación',
+        message: '¿Estás seguro de que quieres eliminar este ingreso?'
+      },
+      noDescription: 'Sin descripción',
+      actions: 'Acciones'
+    }
+  },
+  en: {
+    common: {
+      save: 'Save',
+      update: 'Update',
+      cancel: 'Cancel',
+      delete: 'Delete',
+      edit: 'Edit',
+      previous: 'Previous',
+      next: 'Next',
+      page: 'Page',
+      of: 'of',
+      search: 'Search',
+      filter: 'Filter',
+      reset: 'Reset',
+      confirm: 'Confirm',
+      date: 'Date',
+      amount: 'Amount',
+      description: 'Description',
+      category: 'Category',
+      company: 'Company',
+      recurring: 'Recurring'
+    },
+    incomes: {
+      title: 'Incomes',
+      add: 'Add Income',
+      close: 'Close Form',
+      search: 'Search income...',
+      allCategories: 'All categories',
+      filters: {
+        show: 'Show filters',
+        hide: 'Hide filters',
+        reset: 'Reset filters',
+        dateRange: 'Date range',
+        amountRange: 'Amount range',
+        recurring: 'Only recurring incomes',
+        taxDeductible: 'Only tax-deductible incomes',
+        max: 'Máximo',
+        min: 'Mínimo',
+        to: 'a'
+      },
+      form: {
+        new: 'New Income',
+        edit: 'Edit Income',
+        amount: 'Amount',
+        date: 'Date',
+        description: 'Description',
+        category: 'Category',
+        selectCategory: 'Select a category',
+        taxDeductible: 'Tax is deductible',
+        recurring: 'Is recurring',
+        recurrenceFrequency: 'Recurrence frequency',
+        daily: 'Daily',
+        weekly: 'Weekly',
+        monthly: 'Monthly',
+        yearly: 'Yearly'
+      },
+      deleteConfirmation: {
+        title: 'Confirm deletion',
+        message: 'Are you sure you want to delete this income?'
+      },
+      noDescription: 'No description',
+      actions: 'Actions'
+    }
+  }
+}
+
+export const i18n = createI18n({
+  legacy: false,
+  locale: 'es',
+  fallbackLocale: 'en',
+  messages,
+})
