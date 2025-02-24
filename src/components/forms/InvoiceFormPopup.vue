@@ -2,7 +2,7 @@
   <div v-if="isOpen" class="popup-overlay">
     <div class="popup-content">
       <div class="form-header">
-        <h2>{{ invoiceToEdit ? 'Editar Factura' : 'Nueva Factura' }}</h2>
+        <h2>{{ invoiceToEdit ? $t('invoices.edit') : $t('invoices.new') }}</h2>
         <button @click="closePopup" class="close-button">
           <X class="icon" />
         </button>
@@ -11,10 +11,10 @@
         <div class="form-group">
           <label for="client">
             <User class="icon pastel-blue" />
-            Cliente
+            {{ $t('invoices.client') }}
           </label>
           <select id="client" v-model="form.client_id" required>
-            <option value="">Seleccionar cliente</option>
+            <option value="">{{ $t('common.select') }} {{ $t('invoices.client') }}</option>
             <option v-for="client in clients" :key="client.id" :value="client.id">
               {{ client.name }}
             </option>
@@ -24,10 +24,10 @@
         <div class="form-group">
           <label for="project">
             <Briefcase class="icon pastel-green" />
-            Proyecto
+            {{ $t('invoices.project') }}
           </label>
           <select id="project" v-model="form.project_id">
-            <option value="">Seleccionar proyecto (opcional)</option>
+            <option value="">{{ $t('common.select') }} {{ $t('invoices.project') }} ({{ $t('common.optional') }})</option>
             <option v-for="project in projects.data" :key="project.id" :value="project.id">
               {{ project.name }}
             </option>
@@ -37,7 +37,7 @@
         <div class="form-group">
           <label for="issue_date">
             <Calendar class="icon pastel-yellow" />
-            Fecha de emisión
+            {{ $t('invoices.issueDate') }}
           </label>
           <input id="issue_date" v-model="form.issue_date" type="date" required>
         </div>
@@ -45,7 +45,7 @@
         <div class="form-group">
           <label for="notes">
             <FileText class="icon pastel-purple" />
-            Notas
+            {{ $t('common.notes') }}
           </label>
           <textarea id="notes" v-model="form.notes" rows="3"></textarea>
         </div>
@@ -53,46 +53,46 @@
         <div class="form-group">
           <label for="status">
             <Tag class="icon pastel-orange" />
-            Estado
+            {{ $t('common.status') }}
           </label>
           <select id="status" v-model="form.status" required>
-            <option value="draft">Borrador</option>
-            <option value="sent">Enviada</option>
-            <option value="paid">Pagada</option>
-            <option value="overdue">Vencida</option>
+            <option value="draft">{{ $t('invoices.status.draft') }}</option>
+            <option value="sent">{{ $t('invoices.status.sent') }}</option>
+            <option value="paid">{{ $t('invoices.status.paid') }}</option>
+            <option value="overdue">{{ $t('invoices.status.overdue') }}</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="type">
             <DollarSign class="icon pastel-pink" />
-            Tipo
+            {{ $t('common.type') }}
           </label>
           <select id="type" v-model="form.type" required>
-            <option value="income">Ingreso</option>
-            <option value="expense">Gasto</option>
+            <option value="income">{{ $t('invoices.type.income') }}</option>
+            <option value="expense">{{ $t('invoices.type.expense') }}</option>
           </select>
         </div>
 
         <h3>
           <Package class="icon pastel-teal" />
-          Productos
+          {{ $t('common.products') }}
         </h3>
         <div v-for="(product, index) in form.products" :key="index" class="product-form">
           <div class="form-group">
-            <label :for="'product-name-' + index">Nombre del Producto</label>
+            <label :for="'product-name-' + index">{{ $t('invoices.productName') }}</label>
             <input :id="'product-name-' + index" v-model="product.name" type="text" required>
           </div>
           <div class="form-group">
-            <label :for="'product-price-' + index">Precio</label>
+            <label :for="'product-price-' + index">{{ $t('common.price') }}</label>
             <input :id="'product-price-' + index" v-model="product.price" type="number" step="0.01" required @input="calculateTotals">
           </div>
           <div class="form-group">
-            <label :for="'product-quantity-' + index">Cantidad</label>
+            <label :for="'product-quantity-' + index">{{ $t('common.quantity') }}</label>
             <input :id="'product-quantity-' + index" v-model="product.quantity" type="number" required @input="calculateTotals">
           </div>
           <div class="form-group">
-            <label :for="'product-tax-' + index">Impuesto</label>
+            <label :for="'product-tax-' + index">{{ $t('common.tax') }}</label>
             <select :id="'product-tax-' + index" v-model="product.tax_id" required @change="calculateTotals">
               <option v-for="tax in taxes" :key="tax.id" :value="tax.id">
                 {{ tax.name }} ({{ tax.rate }}%)
@@ -100,7 +100,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label :for="'product-category-' + index">Categoría</label>
+            <label :for="'product-category-' + index">{{ $t('common.category') }}</label>
             <select :id="'product-category-' + index" v-model="product.category_id" required>
               <option v-for="category in product_categories" :key="category.id" :value="category.id">
                 {{ category.name }}
@@ -109,28 +109,28 @@
           </div>
           <button type="button" @click="removeProduct(index)" class="btn-secondary">
             <Trash2 class="icon" />
-            Eliminar Producto
+            {{ $t('invoices.removeProduct') }}
           </button>
         </div>
         <button type="button" @click="addProduct" class="btn-secondary">
           <PlusCircle class="icon" />
-          Añadir Producto
+          {{ $t('invoices.addProduct') }}
         </button>
 
         <div class="totals">
-          <p>Subtotal: {{ form.subtotal.toFixed(2) }}</p>
-          <p>Impuestos: {{ form.tax_amount.toFixed(2) }}</p>
-          <p>Total: {{ form.total.toFixed(2) }}</p>
+          <p>{{ $t('common.subtotal') }}: {{ form.subtotal.toFixed(2) }}</p>
+          <p>{{ $t('invoices.taxAmount') }}: {{ form.tax_amount.toFixed(2) }}</p>
+          <p>{{ $t('common.total') }}: {{ form.total.toFixed(2) }}</p>
         </div>
 
         <div class="form-actions">
           <button type="button" @click="closePopup" class="btn-secondary">
             <X class="icon" />
-            Cancelar
+            {{ $t('common.cancel') }}
           </button>
           <button type="submit" class="btn-primary">
             <Save class="icon" />
-            {{ invoiceToEdit ? 'Actualizar' : 'Crear' }} Factura
+            {{ invoiceToEdit ? $t('invoices.updateInvoice') : $t('invoices.createInvoice') }}
           </button>
         </div>
       </form>
