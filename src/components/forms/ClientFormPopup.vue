@@ -1,27 +1,31 @@
 <template>
   <div v-if="isOpen" class="popup-overlay">
     <div class="popup-content">
-      <h2>{{ isEditing ? 'Editar Cliente' : 'Añadir Cliente' }}</h2>
+      <h2>{{ $t(isEditing ? 'clients.form.title.edit' : 'clients.form.title.add') }}</h2>
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label for="name">Nombre</label>
+          <label for="name">{{ $t('common.name') }}</label>
           <input type="text" id="name" v-model="form.name" required>
         </div>
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="email">{{ $t('common.email') }}</label>
           <input type="email" id="email" v-model="form.email" required>
         </div>
         <div class="form-group">
-          <label for="phone">Teléfono</label>
+          <label for="phone">{{ $t('common.phone') }}</label>
           <input type="tel" id="phone" v-model="form.phone">
         </div>
         <div class="form-group">
-          <label for="address">Dirección</label>
+          <label for="address">{{ $t('common.address') }}</label>
           <input type="text" id="address" v-model="form.address">
         </div>
         <div class="button-group">
-          <button type="submit" class="btn-primary">{{ isEditing ? 'Actualizar' : 'Añadir' }}</button>
-          <button type="button" @click="closePopup" class="btn-secondary">Cancelar</button>
+          <button type="submit" class="btn-primary">
+            {{ $t(isEditing ? 'clients.form.submit.update' : 'clients.form.submit.add') }}
+          </button>
+          <button type="button" @click="closePopup" class="btn-secondary">
+            {{ $t('common.cancel') }}
+          </button>
         </div>
       </form>
     </div>
@@ -31,8 +35,8 @@
 <script>
 import { defineComponent, ref, computed, watch } from 'vue'
 import ClientsRepository from "@/repositories/clients.repository.js";
-import {useAuthStore} from "@/stores/auth.js";
-import {mapState} from "pinia";
+import { useAuthStore } from "@/stores/auth.js";
+import { mapState } from "pinia";
 
 export default defineComponent({
   name: 'ClientFormPopup',
@@ -46,7 +50,7 @@ export default defineComponent({
       default: null
     }
   },
-  computed:{
+  computed: {
     ...mapState(useAuthStore, ['user'])
   },
   setup(props, { emit }) {
@@ -70,7 +74,6 @@ export default defineComponent({
     const handleSubmit = async () => {
       const clientsRepository = new ClientsRepository()
       form.value.user_id = useAuthStore().user.id
-
 
       if (isEditing.value) {
         form.value.id = props.clientToEdit.id
