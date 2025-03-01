@@ -11,7 +11,7 @@
         </div>
         <button class="add-button" @click="toggleForm">
           <PlusCircle class="icon" />
-          <span>{{ showForm ? $t('common.close') : $t('incomes.add') }}</span>
+          <span>{{ showForm ? $t('common.close') : $t('incomes.new') }}</span>
         </button>
       </div>
 

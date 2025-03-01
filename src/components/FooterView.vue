@@ -2,36 +2,36 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
-        <h3 class="footer-title">FacturaApp</h3>
-        <p class="footer-description">Simplifica tu facturación y gestión empresarial</p>
+        <h3 class="footer-title">{{ $t('footer.title') }}</h3>
+        <p class="footer-description">{{ $t('footer.description') }}</p>
       </div>
       <div class="footer-section">
-        <h4 class="footer-subtitle">Enlaces rápidos</h4>
+        <h4 class="footer-subtitle">{{ $t('footer.quickLinks') }}</h4>
         <ul class="footer-links">
-          <li><a href="#" @click.prevent="navigateTo('/dashboard')">Dashboard</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/clientes')">Clientes</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/facturas')">Facturas</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/productos')">Productos</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/dashboard')">{{ $t('footer.dashboard') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/clientes')">{{ $t('footer.clients') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/facturas')">{{ $t('footer.invoices') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/productos')">{{ $t('footer.products') }}</a></li>
         </ul>
       </div>
       <div class="footer-section">
-        <h4 class="footer-subtitle">Soporte</h4>
+        <h4 class="footer-subtitle">{{ $t('footer.support') }}</h4>
         <ul class="footer-links">
-          <li><a href="#" @click.prevent="navigateTo('/ayuda')">Centro de ayuda</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/contacto')">Contacto</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/faq')">FAQ</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/ayuda')">{{ $t('footer.helpCenter') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/contacto')">{{ $t('footer.contact') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/faq')">{{ $t('footer.faq') }}</a></li>
         </ul>
       </div>
       <div class="footer-section">
-        <h4 class="footer-subtitle">Legal</h4>
+        <h4 class="footer-subtitle">{{ $t('footer.legal') }}</h4>
         <ul class="footer-links">
-          <li><a href="#" @click.prevent="navigateTo('/terminos')">Términos de servicio</a></li>
-          <li><a href="#" @click.prevent="navigateTo('/privacidad')">Política de privacidad</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/terminos')">{{ $t('footer.termsOfService') }}</a></li>
+          <li><a href="#" @click.prevent="navigateTo('/privacidad')">{{ $t('footer.privacyPolicy') }}</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; {{ currentYear }} FacturaApp. Todos los derechos reservados.</p>
+      <p>{{ $t('footer.copyright', { year: currentYear }) }}</p>
     </div>
   </footer>
 </template>
@@ -39,8 +39,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const router = useRouter();
+const { t } = useI18n();
 
 const currentYear = computed(() => new Date().getFullYear());
 
@@ -133,4 +135,3 @@ const navigateTo = (path) => {
   }
 }
 </style>
-

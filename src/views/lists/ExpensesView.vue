@@ -7,11 +7,11 @@
           <div class="icon-container">
             <CreditCard class="icon pastel-red" />
           </div>
-          <h1>Gastos</h1>
+          <h1>{{ $t('expenses.title') }}</h1>
         </div>
         <button class="add-button" @click="toggleForm">
           <PlusCircle class="icon" />
-          <span>{{ showForm ? 'Cerrar Formulario' : 'Añadir Gasto' }}</span>
+          <span>{{ showForm ? $t('expenses.closeForm') : $t('expenses.new') }}</span>
         </button>
       </div>
 
@@ -21,19 +21,19 @@
           <input
               v-model="filters.description"
               type="text"
-              placeholder="Buscar gasto..."
+              :placeholder="$t('expenses.search')"
               class="search-input"
           />
         </div>
         <select v-model="filters.category_id" class="category-select">
-          <option value="">Todas las categorías</option>
+          <option value="">{{ $t('expenses.allCategories') }}</option>
           <option v-for="category in expense_categories" :key="category.id" :value="category.id">
             {{ category.name }}
           </option>
         </select>
         <button @click="isFilterOpen = !isFilterOpen" class="filter-button">
           <Filter class="icon" />
-          {{ isFilterOpen ? 'Ocultar filtros' : 'Mostrar filtros' }}
+          {{ isFilterOpen ? $t('expenses.filters.hide') : $t('expenses.filters.show') }}
         </button>
         <button @click="searchExpenses" class="search-button">
           <Search class="icon" />
@@ -42,23 +42,23 @@
 
       <div v-if="isFilterOpen" class="advanced-filters">
         <div class="filter-group">
-          <label>Rango de fechas</label>
+          <label>{{ $t('expenses.filters.dateRange') }}</label>
           <div class="date-range">
             <input v-model="filters.date_from" type="date" class="date-input" />
-            <span>a</span>
+            <span>{{ $t('expenses.filters.to') }}</span>
             <input v-model="filters.date_to" type="date" class="date-input" />
           </div>
         </div>
         <div class="filter-group">
-          <label>Rango de importes</label>
+          <label>{{ $t('expenses.filters.amountRange') }}</label>
           <div class="amount-range">
-            <input v-model="filters.amount_min" type="number" placeholder="Mín" class="amount-input" />
-            <span>a</span>
-            <input v-model="filters.amount_max" type="number" placeholder="Máx" class="amount-input" />
+            <input v-model="filters.amount_min" type="number" :placeholder="$t('expenses.filters.min')" class="amount-input" />
+            <span>{{ $t('expenses.filters.to') }}</span>
+            <input v-model="filters.amount_max" type="number" :placeholder="$t('expenses.filters.max')" class="amount-input" />
           </div>
         </div>
         <div class="filter-actions">
-          <button @click="resetFilters" class="reset-filters-button">Restablecer filtros</button>
+          <button @click="resetFilters" class="reset-filters-button">{{ $t('expenses.filters.reset') }}</button>
         </div>
       </div>
 
@@ -70,7 +70,7 @@
                 <div class="icon-container">
                   <CreditCard class="icon pastel-red" />
                 </div>
-                <h6>{{ expense.description || 'Sin descripción' }}</h6>
+                <h6>{{ expense.description || $t('expenses.noDescription') }}</h6>
               </div>
             </div>
 
@@ -108,7 +108,7 @@
 
           <div v-if="expense.is_recurring" class="card-footer">
             <RefreshCw class="icon pastel-teal" />
-            <p>Recurrente: {{ expense.recurrence_frequency === 'monthly' ? 'Mensual' :  expense.recurrence_frequency === 'yearly' ? 'Anual' : expense.recurrence_frequency === 'daily' ? 'Diario' : 'Semanal'}}</p>
+            <p>{{ $t('common.recurring') }}: {{ $t(`common.${expense.recurrence_frequency}`) }}</p>
           </div>
         </div>
       </div>
@@ -119,22 +119,22 @@
             :disabled="!expenses.links.prev"
             class="pagination-button"
         >
-          Anterior
+          {{ $t('common.previous') }}
         </button>
-        <span class="page-info">Page {{ expenses.meta.current_page }} of {{ expenses.meta.last_page }}</span>
+        <span class="page-info">{{ $t('common.page') }} {{ expenses.meta.current_page }} {{ $t('common.of') }} {{ expenses.meta.last_page }}</span>
         <button
             @click="changePage(expenses.meta.current_page + 1)"
             :disabled="!expenses.links.next"
             class="pagination-button"
         >
-          Siguiente
+          {{ $t('common.next') }}
         </button>
       </div>
     </div>
 
     <div class="expense-form" :class="{ 'show': showForm }">
       <div class="form-header">
-        <h2>{{ editingExpense ? 'Editar Gasto' : 'Nuevo Gasto' }}</h2>
+        <h2>{{ editingExpense ? $t('expenses.edit') : $t('expenses.new') }}</h2>
         <button class="close-button" @click="toggleForm">
           <X class="icon" />
         </button>
@@ -142,18 +142,18 @@
 
       <form @submit.prevent="handleSubmit" class="form-content">
         <div class="form-group">
-          <label>Cantidad</label>
+          <label>{{ $t('expenses.form.amount') }}</label>
           <input
               v-model="newExpense.amount"
               type="number"
               step="0.01"
-              placeholder="Introduce la cantidad"
+              :placeholder="$t('common.amount')"
               required
           >
         </div>
 
         <div class="form-group">
-          <label>Fecha</label>
+          <label>{{ $t('expenses.form.date') }}</label>
           <input
               v-model="newExpense.date"
               type="date"
@@ -162,18 +162,18 @@
         </div>
 
         <div class="form-group">
-          <label>Descripción</label>
+          <label>{{ $t('expenses.form.description') }}</label>
           <input
               v-model="newExpense.description"
               type="text"
-              placeholder="Introduce la descripción"
+              :placeholder="$t('common.description')"
           >
         </div>
 
         <div class="form-group">
-          <label>Categoría</label>
+          <label>{{ $t('expenses.form.category') }}</label>
           <select v-model="newExpense.category_id" required>
-            <option value="">Selecciona una categoría</option>
+            <option value="">{{ $t('expenses.form.selectCategory') }}</option>
             <option v-for="category in expense_categories" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
@@ -183,30 +183,30 @@
         <div class="form-group">
           <label>
             <input v-model="newExpense.tax_deductible" type="checkbox">
-            El impuesto es deducible
+            {{ $t('expenses.form.taxDeductible') }}
           </label>
         </div>
 
         <div class="form-group">
           <label>
             <input v-model="newExpense.is_recurring" type="checkbox">
-            Es recurrente
+            {{ $t('expenses.form.recurring') }}
           </label>
         </div>
 
         <div v-if="newExpense.is_recurring" class="form-group">
-          <label>Frecuencia de recurrencia</label>
+          <label>{{ $t('expenses.form.recurrenceFrequency') }}</label>
           <select v-model="newExpense.recurrence_frequency" required>
-            <option value="daily">Diario</option>
-            <option value="weekly">Semanal</option>
-            <option value="monthly">Mensual</option>
-            <option value="yearly">Anual</option>
+            <option value="daily">{{ $t('common.daily') }}</option>
+            <option value="weekly">{{ $t('common.weekly') }}</option>
+            <option value="monthly">{{ $t('common.monthly') }}</option>
+            <option value="yearly">{{ $t('common.yearly') }}</option>
           </select>
         </div>
 
         <button type="submit" class="submit-button">
           <Save class="icon" />
-          {{ editingExpense ? 'Actualizar Gasto' : 'Guardar Gasto' }}
+          {{ editingExpense ? $t('expenses.update') : $t('expenses.save') }}
         </button>
       </form>
     </div>

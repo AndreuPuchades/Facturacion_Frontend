@@ -6,11 +6,11 @@
           <div class="icon-container">
             <Building2 class="icon" />
           </div>
-          <h1>Companies</h1>
+          <h1>{{ $t('companies.title') }}</h1>
         </div>
         <button class="add-button" @click="toggleForm">
           <PlusCircle class="icon" />
-          <span>{{ showForm ? 'Close Form' : 'Add Company' }}</span>
+          <span>{{ showForm ? $t('companies.closeForm') : $t('companies.add') }}</span>
         </button>
       </div>
 
@@ -62,7 +62,7 @@
 
     <div class="company-form" :class="{ 'show': showForm }">
       <div class="form-header">
-        <h2>Nueva Empresa</h2>
+        <h2>{{ newCompany.id ? $t('companies.edit') : $t('companies.new') }}</h2>
         <button class="close-button" @click="toggleForm">
           <X class="icon" />
         </button>
@@ -70,54 +70,54 @@
 
       <form @submit.prevent="handleSubmit" class="form-content">
         <div class="form-group">
-          <label>Nombre empresa</label>
+          <label>{{ $t('companies.form.name') }}</label>
           <input
               v-model="newCompany.name"
               type="text"
-              placeholder="Introduce el nombre"
+              :placeholder="$t('common.name')"
               required
           >
         </div>
 
         <div class="form-group">
-          <label>Teléfono</label>
+          <label>{{ $t('companies.form.phone') }}</label>
           <input
               v-model="newCompany.phone"
               type="tel"
-              placeholder="Introduce el número de teléfono"
+              :placeholder="$t('common.phone')"
           >
         </div>
 
         <div class="form-group">
-          <label>Email</label>
+          <label>{{ $t('companies.form.email') }}</label>
           <input
               v-model="newCompany.email"
               type="email"
-              placeholder="Intruduce el email"
+              :placeholder="$t('common.email')"
           >
         </div>
 
         <div class="form-group">
-          <label>Web</label>
+          <label>{{ $t('companies.form.website') }}</label>
           <input
               v-model="newCompany.website"
               type="url"
-              placeholder="Introduce la web"
+              :placeholder="$t('common.website')"
           >
         </div>
 
         <div class="form-group">
-          <label>Dirección</label>
+          <label>{{ $t('companies.form.address') }}</label>
           <textarea
               v-model="newCompany.address"
-              placeholder="Introduce la dirección"
+              :placeholder="$t('common.address')"
               rows="3"
           ></textarea>
         </div>
 
         <button type="submit" class="submit-button">
           <Save class="icon" />
-          Save Company
+          {{ $t('companies.form.save') }}
         </button>
       </form>
     </div>

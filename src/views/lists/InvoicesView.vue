@@ -7,11 +7,11 @@
           <div class="icon-container">
             <FileText class="icon" />
           </div>
-          <h1>Gestión de Facturas</h1>
+          <h1>{{ $t('invoices.title') }}</h1>
         </div>
         <button class="add-button" @click="openAddInvoicePopup">
           <PlusCircle class="icon" />
-          <span>Nueva Factura</span>
+          <span>{{ $t('invoices.new') }}</span>
         </button>
       </div>
 
@@ -21,53 +21,54 @@
           <input
               v-model="filters.client"
               type="text"
-              placeholder="Buscar por cliente..."
+              :placeholder="$t('invoices.search')"
               class="search-input"
           />
         </div>
         <select v-model="filters.status" class="status-select">
-          <option value="">Todos los estados</option>
-          <option value="draft">Borrador</option>
-          <option value="sent">Enviada</option>
-          <option value="paid">Pagada</option>
-          <option value="overdue">Vencida</option>
+          <option value="">{{ $t('common.allStatuses') }}</option>
+          <option value="draft">{{ $t('invoices.status.draft') }}</option>
+          <option value="sent">{{ $t('invoices.status.sent') }}</option>
+          <option value="paid">{{ $t('invoices.status.paid') }}</option>
+          <option value="overdue">{{ $t('invoices.status.overdue') }}</option>
         </select>
         <button @click="isFilterOpen = !isFilterOpen" class="filter-button">
           <Filter class="icon" />
-          {{ isFilterOpen ? 'Ocultar filtros' : 'Mostrar filtros' }}
+          {{ isFilterOpen ? $t('invoices.filters.hide') : $t('invoices.filters.show') }}
         </button>
         <button @click="searchInvoices" class="search-button">
           <Search class="icon" />
+          {{ $t('common.search') }}
         </button>
       </div>
 
       <div v-if="isFilterOpen" class="advanced-filters">
         <div class="filter-group">
-          <label>Rango de fechas</label>
+          <label>{{ $t('invoices.filters.dateRange') }}</label>
           <div class="date-range">
             <input v-model="filters.date_from" type="date" class="date-input" />
-            <span>a</span>
+            <span>{{ $t('common.to') }}</span>
             <input v-model="filters.date_to" type="date" class="date-input" />
           </div>
         </div>
         <div class="filter-group">
-          <label>Rango de importes</label>
+          <label>{{ $t('invoices.filters.amountRange') }}</label>
           <div class="amount-range">
-            <input v-model="filters.amount_min" type="number" placeholder="Mín" class="amount-input" />
-            <span>a</span>
-            <input v-model="filters.amount_max" type="number" placeholder="Máx" class="amount-input" />
+            <input v-model="filters.amount_min" type="number" :placeholder="$t('common.min')" class="amount-input" />
+            <span>{{ $t('common.to') }}</span>
+            <input v-model="filters.amount_max" type="number" :placeholder="$t('common.max')" class="amount-input" />
           </div>
         </div>
         <div class="filter-group">
-          <label>Tipo</label>
+          <label>{{ $t('common.type') }}</label>
           <select v-model="filters.type" class="filter-select">
-            <option value="">Todos los tipos</option>
-            <option value="income">Ingreso</option>
-            <option value="expense">Gasto</option>
+            <option value="">{{ $t('invoices.filters.allTypes') }}</option>
+            <option value="income">{{ $t('invoices.type.income') }}</option>
+            <option value="expense">{{ $t('invoices.type.expense') }}</option>
           </select>
         </div>
         <div class="filter-actions">
-          <button @click="resetFilters" class="reset-filters-button">Restablecer filtros</button>
+          <button @click="resetFilters" class="reset-filters-button">{{ $t('invoices.filters.reset') }}</button>
         </div>
       </div>
 
@@ -79,7 +80,7 @@
                 <div class="icon-container">
                   <FileText class="icon pastel-blue" />
                 </div>
-                <h6>Factura #{{ invoice.id }}</h6>
+                <h6>{{ $t('invoices.invoiceNumber', { id: invoice.id }) }}</h6>
               </div>
             </div>
 
@@ -101,12 +102,12 @@
 
               <div class="detail-item">
                 <Tag class="icon pastel-orange" />
-                <span>{{ formatStatus(invoice.status) }}</span>
+                <span>{{ $t(`invoices.status.${invoice.status}`) }}</span>
               </div>
 
               <div class="detail-item">
                 <Briefcase class="icon pastel-teal" />
-                <span>{{ invoice.type === 'income' ? 'Ingreso' : 'Gasto' }}</span>
+                <span>{{ $t(`invoices.type.${invoice.type}`) }}</span>
               </div>
             </div>
 
@@ -128,15 +129,15 @@
             :disabled="!invoices.links.prev"
             class="pagination-button"
         >
-          Previous
+          {{ $t('common.previous') }}
         </button>
-        <span class="page-info">Page {{ invoices.meta.current_page }} of {{ invoices.meta.last_page }}</span>
+        <span class="page-info">{{ $t('common.page') }} {{ invoices.meta.current_page }} {{ $t('common.of') }} {{ invoices.meta.last_page }}</span>
         <button
             @click="changePage(invoices.meta.current_page + 1)"
             :disabled="!invoices.links.next"
             class="pagination-button"
         >
-          Next
+          {{ $t('common.next') }}
         </button>
       </div>
     </div>
