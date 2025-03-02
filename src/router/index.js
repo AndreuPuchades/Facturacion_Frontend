@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useCounterStore } from '@/stores/index';
 import { useAuthStore } from '@/stores/auth';
-
 import MenuItem from "@/components/MenuItem.vue";
 import ClientsViews from "@/views/lists/ClientsViews.vue";
 import CompaniesViews from "@/views/lists/CompaniesViews.vue";
@@ -13,6 +12,8 @@ import LoginView from "@/views/LoginView.vue";
 import ProjectsView from "@/views/lists/ProjectsView.vue";
 import ProductsView from "@/views/lists/ProductsView.vue";
 import InvoicesView from "@/views/lists/InvoicesView.vue";
+import TimesheetView from "@/views/TimesheetView.vue";
+import TimesheetCalendarView from "@/views/TimesheetCalendarView.vue";
 
 const routes = [
     {
@@ -67,6 +68,18 @@ const routes = [
         name: 'gastos',
         component: ExpensesView,
         meta: { requiresAuth: true, requiresCompany: true }
+    },
+    {
+        path: '/timesheet',
+        name: 'timesheet',
+        component: TimesheetView,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/calendar-timesheet',
+        name: 'calendar-timesheet',
+        component: TimesheetCalendarView,
+        meta: { requiresAuth: true }
     },
     {
         path: '/reportes',

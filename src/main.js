@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
 import { i18n } from './i18n'
+import 'leaflet/dist/leaflet.css'
 
 const app = createApp(App);
 const pinia = createPinia();

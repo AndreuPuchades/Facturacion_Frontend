@@ -68,12 +68,91 @@ const messages = {
       profile: 'Perfil',
       logout: 'Cerrar sesión'
     },
-    incomes: {
-      title: 'Ingresos',
-      new: 'Añadir Ingreso',
-      edit: 'Editar Ingreso',
-      close: 'Cerrar Formulario',
-      search: 'Buscar ingreso...',
+    invoices: {
+      title: 'Gestión de Facturas',
+      new: 'Nueva Factura',
+      edit: 'Editar Factura',
+      client: 'Cliente',
+      project: 'Proyecto',
+      issueDate: 'Fecha de emisión',
+      status: {
+        draft: 'Borrador',
+        sent: 'Enviada',
+        paid: 'Pagada',
+        overdue: 'Vencida'
+      },
+      type: {
+        income: 'Ingreso',
+        expense: 'Gasto'
+      },
+      productName: 'Nombre del Producto',
+      addProduct: 'Añadir Producto',
+      removeProduct: 'Eliminar Producto',
+      taxAmount: 'Impuestos',
+      createInvoice: 'Crear Factura',
+      updateInvoice: 'Actualizar Factura',
+      search: 'Buscar por cliente...',
+      filters: {
+        show: 'Mostrar filtros',
+        hide: 'Ocultar filtros',
+        reset: 'Restablecer filtros',
+        dateRange: 'Rango de fechas',
+        amountRange: 'Rango de importes',
+        allTypes: 'Todos los tipos'
+      },
+      deleteConfirmation: '¿Estás seguro de que quieres eliminar esta factura?',
+      invoiceNumber: 'Factura #{id}'
+    },
+    clients: {
+      title: 'Clientes',
+      search: 'Buscar cliente por nombre...',
+      add: 'Añadir Cliente',
+      edit: 'Editar Cliente',
+      delete: 'Eliminar Cliente',
+      deleteConfirmation: {
+        title: 'Confirmar eliminación',
+        message: '¿Estás seguro de que quieres eliminar este cliente?'
+      },
+      form: {
+        title: {
+          add: 'Añadir Cliente',
+          edit: 'Editar Cliente'
+        },
+        name: 'Nombre',
+        email: 'Correo electrónico',
+        phone: 'Teléfono',
+        address: 'Dirección',
+        submit: {
+          add: 'Añadir',
+          update: 'Actualizar'
+        }
+      }
+    },
+    companies: {
+      title: 'Empresas',
+      add: 'Añadir Empresa',
+      edit: 'Editar Empresa',
+      closeForm: 'Cerrar Formulario',
+      new: 'Nueva Empresa',
+      form: {
+        name: 'Nombre empresa',
+        phone: 'Teléfono',
+        email: 'Correo electrónico',
+        website: 'Web',
+        address: 'Dirección',
+        save: 'Guardar Empresa'
+      },
+      deleteConfirmation: {
+        title: 'Confirmar eliminación',
+        message: '¿Estás seguro de que quieres eliminar esta empresa?'
+      }
+    },
+    expenses: {
+      title: 'Gastos',
+      new: 'Nuevo Gasto',
+      edit: 'Editar Gasto',
+      closeForm: 'Cerrar Formulario',
+      search: 'Buscar gasto...',
       allCategories: 'Todas las categorías',
       filters: {
         show: 'Mostrar filtros',
@@ -81,15 +160,10 @@ const messages = {
         reset: 'Restablecer filtros',
         dateRange: 'Rango de fechas',
         amountRange: 'Rango de importes',
-        recurring: 'Solo ingresos recurrentes',
-        taxDeductible: 'Solo ingresos deducibles',
-        max: 'Máximo',
-        min: 'Mínimo',
-        to: 'a'
+        recurring: 'Solo gastos recurrentes',
+        taxDeductible: 'Solo gastos deducibles'
       },
       form: {
-        new: 'Nuevo Ingreso',
-        edit: 'Editar Ingreso',
         amount: 'Cantidad',
         date: 'Fecha',
         description: 'Descripción',
@@ -97,20 +171,51 @@ const messages = {
         selectCategory: 'Selecciona una categoría',
         taxDeductible: 'El impuesto es deducible',
         recurring: 'Es recurrente',
-        recurrenceFrequency: 'Frecuencia de recurrencia',
-        daily: 'Diario',
-        weekly: 'Semanal',
-        monthly: 'Mensual',
-        yearly: 'Anual'
+        recurrenceFrequency: 'Frecuencia de recurrencia'
       },
       deleteConfirmation: {
         title: 'Confirmar eliminación',
-        message: '¿Estás seguro de que quieres eliminar este ingreso?'
+        message: '¿Estás seguro de que quieres eliminar este gasto?'
       },
       noDescription: 'Sin descripción',
-      actions: 'Acciones'
-    }
+      save: 'Guardar Gasto',
+      update: 'Actualizar Gasto'
+    },
+    footer: {
+      title: 'FacturaApp',
+      description: 'Simplifica tu facturación y gestión empresarial',
+      quickLinks: 'Enlaces rápidos',
+      support: 'Soporte',
+      legal: 'Legal',
+      dashboard: 'Dashboard',
+      clients: 'Clientes',
+      invoices: 'Facturas',
+      products: 'Productos',
+      helpCenter: 'Centro de ayuda',
+      contact: 'Contacto',
+      faq: 'FAQ',
+      termsOfService: 'Términos de servicio',
+      privacyPolicy: 'Política de privacidad',
+      copyright: '© {year} FacturaApp. Todos los derechos reservados.'
+    },
+    timesheet: 'Registro de Horas',
+    checkIn: 'Iniciar Jornada',
+    checkOut: 'Finalizar Jornada',
+    currentLocation: 'Ubicación Actual',
+    locationNotAvailable: 'Ubicación no disponible',
+    loading: 'Cargando...',
+    geolocationNotSupported: 'Tu navegador no soporta geolocalización.',
+    locationError: 'No se pudo obtener tu ubicación: {error}',
+    checkInSuccess: '¡Inicio de jornada registrado con éxito!',
+    checkInError: 'Error al iniciar la jornada: {error}',
+    checkOutSuccess: '¡Fin de jornada registrado con éxito!',
+    checkOutError: 'Error al finalizar la jornada: {error}',
+    todayEntries: 'Fichajes de Hoy',
+    totalHoursWorked: 'Total horas trabajadas',
+    timesheetCalendar: 'Calendario de Fichajes',
+    noEntriesForThisDay: 'No hay fichajes para este día',
   },
+
   en: {
     common: {
       save: 'Save',
@@ -132,13 +237,137 @@ const messages = {
       description: 'Description',
       category: 'Category',
       company: 'Company',
-      recurring: 'Recurring'
+      recurring: 'Recurring',
+      actions: 'Actions',
+      lastUpdate: 'Last update',
+      name: 'Name',
+      email: 'Email',
+      phone: 'Phone',
+      address: 'Address',
+      close: 'Close',
+      create: 'Create',
+      select: 'Select',
+      optional: 'optional',
+      notes: 'Notes',
+      status: 'Status',
+      type: 'Type',
+      price: 'Price',
+      quantity: 'Quantity',
+      tax: 'Tax',
+      subtotal: 'Subtotal',
+      total: 'Total',
+      product: 'Product',
+      products: 'Products',
+      website: 'Website',
+      frequency: 'Frequency',
+      daily: 'Daily',
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      yearly: 'Yearly',
+      allStatuses: 'All statuses',
+      min: 'Minimum',
+      max: 'Maximum',
+      to: 'to'
     },
-    incomes: {
-      title: 'Incomes',
-      new: 'Add Income',
-      close: 'Close Form',
-      search: 'Search income...',
+    menu: {
+      dashboard: 'Dashboard',
+      clients: 'Clients',
+      projects: 'Projects',
+      invoices: 'Invoices',
+      products: 'Products',
+      finances: 'FINANCES',
+      incomes: 'Incomes',
+      expenses: 'Expenses',
+      settings: 'Settings',
+      companies: 'Companies',
+      profile: 'Profile',
+      logout: 'Log out'
+    },
+    invoices: {
+      title: 'Invoice Management',
+      new: 'New Invoice',
+      edit: 'Edit Invoice',
+      client: 'Client',
+      project: 'Project',
+      issueDate: 'Issue Date',
+      status: {
+        draft: 'Draft',
+        sent: 'Sent',
+        paid: 'Paid',
+        overdue: 'Overdue'
+      },
+      type: {
+        income: 'Income',
+        expense: 'Expense'
+      },
+      productName: 'Product Name',
+      addProduct: 'Add Product',
+      removeProduct: 'Remove Product',
+      taxAmount: 'Tax Amount',
+      createInvoice: 'Create Invoice',
+      updateInvoice: 'Update Invoice',
+      search: 'Search by client...',
+      filters: {
+        show: 'Show filters',
+        hide: 'Hide filters',
+        reset: 'Reset filters',
+        dateRange: 'Date range',
+        amountRange: 'Amount range',
+        allTypes: 'All types'
+      },
+      deleteConfirmation: 'Are you sure you want to delete this invoice?',
+      invoiceNumber: 'Invoice #{id}'
+    },
+    clients: {
+      title: 'Clients',
+      search: 'Search client by name...',
+      add: 'Add Client',
+      edit: 'Edit Client',
+      delete: 'Delete Client',
+      deleteConfirmation: {
+        title: 'Confirm deletion',
+        message: 'Are you sure you want to delete this client?'
+      },
+      form: {
+        title: {
+          add: 'Add Client',
+          edit: 'Edit Client'
+        },
+        name: 'Name',
+        email: 'Email',
+        phone: 'Phone',
+        address: 'Address',
+        submit: {
+          add: 'Add',
+          update: 'Update'
+        }
+      }
+    },
+    companies: {
+      title: 'Companies',
+      add: 'Add Company',
+      edit: 'Edit Company',
+      closeForm: 'Close Form',
+      new: 'New Company',
+      form: {
+        name: 'Company name',
+        phone: 'Phone',
+        email: 'Email',
+        website: 'Website',
+        address: 'Address',
+        save: 'Save Company'
+      },
+      deleteConfirmation: {
+        title: 'Confirm deletion',
+        message: 'Are you sure you want to delete this company?'
+      }
+    },
+    expenses: {
+      title: 'Expenses',
+      new: 'New Expense',
+      edit: 'Edit Expense',
+      closeForm: 'Close Form',
+      search: 'Search expense...',
       allCategories: 'All categories',
       filters: {
         show: 'Show filters',
@@ -146,15 +375,10 @@ const messages = {
         reset: 'Reset filters',
         dateRange: 'Date range',
         amountRange: 'Amount range',
-        recurring: 'Only recurring incomes',
-        taxDeductible: 'Only tax-deductible incomes',
-        max: 'Maximum',
-        min: 'Minimum',
-        to: 'to'
+        recurring: 'Only recurring expenses',
+        taxDeductible: 'Only tax-deductible expenses'
       },
       form: {
-        new: 'New Income',
-        edit: 'Edit Income',
         amount: 'Amount',
         date: 'Date',
         description: 'Description',
@@ -162,19 +386,49 @@ const messages = {
         selectCategory: 'Select a category',
         taxDeductible: 'Tax is deductible',
         recurring: 'Is recurring',
-        recurrenceFrequency: 'Recurrence frequency',
-        daily: 'Daily',
-        weekly: 'Weekly',
-        monthly: 'Monthly',
-        yearly: 'Yearly'
+        recurrenceFrequency: 'Recurrence frequency'
       },
       deleteConfirmation: {
         title: 'Confirm deletion',
-        message: 'Are you sure you want to delete this income?'
+        message: 'Are you sure you want to delete this expense?'
       },
       noDescription: 'No description',
-      actions: 'Actions'
-    }
+      save: 'Save Expense',
+      update: 'Update Expense'
+    },
+    footer: {
+      title: 'FacturaApp',
+      description: 'Simplify your invoicing and business management',
+      quickLinks: 'Quick Links',
+      support: 'Support',
+      legal: 'Legal',
+      dashboard: 'Dashboard',
+      clients: 'Clients',
+      invoices: 'Invoices',
+      products: 'Products',
+      helpCenter: 'Help Center',
+      contact: 'Contact',
+      faq: 'FAQ',
+      termsOfService: 'Terms of Service',
+      privacyPolicy: 'Privacy Policy',
+      copyright: '© {year} FacturaApp. All rights reserved.'
+    },
+    timesheet: 'Timesheet',
+    checkIn: 'Check In',
+    checkOut: 'Check Out',
+    currentLocation: 'Current Location',
+    locationNotAvailable: 'Location not available',
+    loading: 'Loading...',
+    geolocationNotSupported: 'Geolocation is not supported by your browser.',
+    locationError: 'Unable to retrieve your location: {error}',
+    checkInSuccess: 'Check-in successful!',
+    checkInError: 'Error during check-in: {error}',
+    checkOutSuccess: 'Check-out successful!',
+    checkOutError: 'Error during check-out: {error}',
+    todayEntries: 'Today Entries',
+    totalHoursWorked: 'Total Hours Worked',
+    timesheetCalendar: 'Timesheet Calendar',
+    noEntriesForThisDay: 'No entries for this day',
   }
 }
 
