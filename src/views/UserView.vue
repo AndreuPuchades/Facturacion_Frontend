@@ -1,7 +1,7 @@
 <template>
   <div class="profile-container">
     <LoadingSpinner v-if="isLoading" />
-    <div class="profile-header">
+    <div v-if="!isLoading" class="profile-header">
       <h1 class="profile-title">Perfil de Usuario</h1>
       <button @click="updateProfile" class="save-profile-btn" :disabled="loading">
         <svg v-if="loading" class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
@@ -12,7 +12,7 @@
       </button>
     </div>
 
-    <div class="profile-grid">
+    <div v-if="!isLoading" class="profile-grid">
       <div class="profile-card">
         <div class="card-header">
           <div class="profile-avatar">
@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <div class="profile-card">
+      <div v-if="!isLoading" class="profile-card">
         <div class="card-header">
           <h2 class="section-title">Cambiar Contraseña</h2>
         </div>
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <div class="profile-card stats-card">
+      <div v-if="userStats.role === 'admin' && userStats.role === 'client' && !isLoading" class="profile-card stats-card">
         <div class="card-header">
           <h2 class="section-title">Estadísticas</h2>
         </div>
@@ -89,6 +89,15 @@
             <span class="stat-label">Total Clientes</span>
             <span class="stat-value">{{ userStats.clients_count }}</span>
           </div>
+          <div class="stat-item">
+            <span class="stat-label">Miembro desde</span>
+            <span class="stat-value">{{ formatDate(userStats.created_at) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="userStats.role === 'employee' && !isLoading" class="profile-card stats-card">
+        <div style="justify-content: center; align-content: center; text-align: center">
           <div class="stat-item">
             <span class="stat-label">Miembro desde</span>
             <span class="stat-value">{{ formatDate(userStats.created_at) }}</span>
@@ -159,6 +168,7 @@ export default {
         this.profilePhotoUrl = userData.data.profile_photo_url
 
         this.userStats = {
+          role: userData.data.role,
           companies_count: userData.data.companies_count,
           clients_count: userData.data.clients_count,
           created_at: userData.data.created_at,

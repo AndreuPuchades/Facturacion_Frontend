@@ -57,6 +57,8 @@ const messages = {
     menu: {
       dashboard: 'Dashboard',
       employeesTimesheet: 'Horario de Empleados',
+      timesheet: 'Fichar',
+      timesheetCalendar: 'Calendario de fichaje',
       clients: 'Clientes',
       projects: 'Proyectos',
       invoices: 'Facturas',
@@ -215,6 +217,12 @@ const messages = {
     totalHoursWorked: 'Total horas trabajadas',
     timesheetCalendar: 'Calendario de Fichajes',
     noEntriesForThisDay: 'No hay fichajes para este día',
+    loadingEntries: 'Cargando fichajes...',
+    notes: 'Notas',
+    employeeSchedule: 'Horario de Empleado',
+    checkInSuccessful: 'Entrada registrada con éxito',
+    checkOutSuccessful: 'Salida registrada con éxito',
+    selectEmployee: 'Selecciona un empleado',
   },
 
   en: {
@@ -273,6 +281,8 @@ const messages = {
     menu: {
       dashboard: 'Dashboard',
       employeesTimesheet: 'Employees Timesheet',
+      timesheet: 'Clock In/Out',
+      timesheetCalendar: 'Timesheet Calendar',
       clients: 'Clients',
       projects: 'Projects',
       invoices: 'Invoices',
@@ -431,6 +441,12 @@ const messages = {
     totalHoursWorked: 'Total Hours Worked',
     timesheetCalendar: 'Timesheet Calendar',
     noEntriesForThisDay: 'No entries for this day',
+    loadingEntries: 'Loading entries...',
+    notes: 'Notes',
+    employeeSchedule: 'Employee Schedule',
+    checkInSuccessful: 'Check-in successful',
+    checkOutSuccessful: 'Check-out successful',
+    selectEmployee: 'Select an employee',
   }
 }
 

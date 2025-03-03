@@ -32,73 +32,73 @@ const routes = [
         path: '/dashboard',
         name: 'dashboard',
         component: DashboardView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/clientes',
         name: 'clientes',
         component: ClientsViews,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/proyectos',
         name: 'proyectos',
         component: ProjectsView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/facturas',
         name: 'facturas',
         component: InvoicesView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/productos',
         name: 'productos',
         component: ProductsView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/ingresos',
         name: 'ingresos',
         component: IncomesView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/gastos',
         name: 'gastos',
         component: ExpensesView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
-        path: '/employees-timesheet',
-        name: 'employeesTimesheet',
+        path: '/fichaje/empleados',
+        name: 'fichajeEmpleados',
         component: EmployeeScheduleView,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
-        path: '/timesheet',
-        name: 'timesheet',
+        path: '/fichaje',
+        name: 'fichar',
         component: TimesheetView,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, roles: ['employee'] }
     },
     {
-        path: '/calendar-timesheet',
-        name: 'calendar-timesheet',
+        path: '/fichaje/calendario',
+        name: 'fichajeCalendario',
         component: TimesheetCalendarView,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, roles: ['employee'] }
     },
     {
         path: '/reportes',
         name: 'reportes',
         component: MenuItem,
-        meta: { requiresAuth: true, requiresCompany: true }
+        meta: { requiresAuth: true, requiresCompany: true, roles: ['admin', 'client'] }
     },
     {
         path: '/ajustes',
         name: 'ajustes',
         component: CompaniesViews,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, roles: ['admin', 'client'] }
     },
     {
         path: '/perfil',
@@ -120,23 +120,38 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const counterStore = useCounterStore();
     const authStore = useAuthStore();
+    const userRole = authStore.user?.role;
 
     if (to.name === 'home') {
         next();
-    } else if (to.matched.some(record => record.meta.guestOnly)) {
+        return;
+    }
+    if (to.matched.some(record => record.meta.guestOnly)) {
         if (authStore.isAuthenticated) {
             next({ name: 'dashboard' });
         } else {
             next();
         }
-    } else if (to.matched.some(record => record.meta.requiresAuth)) {
+        return;
+    }
+    if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!authStore.isAuthenticated) {
             next({ name: 'login' });
-        } else if (to.matched.some(record => record.meta.requiresCompany) && !counterStore.isSelectedCompany) {
-            next({ name: 'ajustes' });
-        } else {
-            next();
+            return;
         }
+        if (to.matched.some(record => record.meta.requiresCompany) && !counterStore.isSelectedCompany) {
+            next({ name: 'ajustes' });
+            return;
+        }
+        if (to.meta.roles && !to.meta.roles.includes(userRole)) {
+            if (userRole === 'employee') {
+                next({ name: 'fichar' });
+            } else {
+                next({ name: 'dashboard' });
+            }
+            return;
+        }
+        next();
     } else {
         next({ name: 'home' });
     }

@@ -47,7 +47,7 @@
               {{ entry.type === 'check_in' ? $t('checkIn') : $t('checkOut') }}
             </span>
             <span class="entry-time">{{ formatTime(entry.time) }}</span>
-            <button @click="openMiniMap(entry)" class="btn-mini-map" :title="$t('viewLocation')">
+            <button @click="openMiniMap(entry)" class="btn-mini-map">
               <MapIcon class="h-5 w-5" />
             </button>
           </div>
@@ -225,13 +225,13 @@ export default {
       try {
         if (this.isCheckedIn) {
           await this.timesheetRepo.checkOut(this.latitude, this.longitude);
-          this.message = 'Check-out successful';
+          this.message = this.$t('checkOutSuccessful');
           this.isCheckedIn = false;
           this.stopTimer();
           this.elapsedTime = 0;
         } else {
           const response = await this.timesheetRepo.checkIn(this.latitude, this.longitude);
-          this.message = 'Check-in successful';
+          this.message = this.$t('checkInSuccessful');
           this.isCheckedIn = true;
           this.lastEntryTime = new Date(response.time);
           this.startTimer();
@@ -290,7 +290,7 @@ export default {
       if (this.todayEntries[index].type === 'check_out' && index > 0) {
         const checkOutTime = new Date(this.todayEntries[index].time);
         const checkInTime = new Date(this.todayEntries[index - 1].time);
-        return (checkOutTime - checkInTime) / 1000; // Duration in seconds
+        return (checkOutTime - checkInTime) / 1000;
       }
       return 0;
     },

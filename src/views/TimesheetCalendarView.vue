@@ -89,7 +89,7 @@ export default {
   },
   computed: {
     currentMonthName() {
-      return this.currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+      return this.currentDate.toLocaleString(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' });
     },
     calendarDays() {
       const year = this.currentDate.getFullYear();
@@ -177,7 +177,7 @@ export default {
     },
     formatDate(date) {
       const dateObj = new Date(date);
-      return dateObj.toLocaleDateString('es-ES', {
+      return dateObj.toLocaleDateString(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',

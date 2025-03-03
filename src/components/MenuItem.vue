@@ -5,9 +5,7 @@
       <span></span>
       <span></span>
     </button>
-
     <div v-if="isOpen && isMobile" class="sidebar-overlay" @click="closeSidebar"></div>
-
     <aside class="sidebar" :class="{ 'open': isOpen, 'mobile': isMobile }">
       <div class="sidebar-header">
         <div class="header-content">
@@ -21,7 +19,7 @@
 
       <nav class="sidebar-nav">
         <ul class="nav-list">
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/dashboard" class="nav-link" :class="{ 'active': currentRoute === 'dashboard' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"></rect>
@@ -33,8 +31,8 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
-            <router-link to="/employees-timesheet" class="nav-link" :class="{ 'active': currentRoute === 'employeesTimesheet' }">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
+            <router-link to="/fichaje/empleados" class="nav-link" :class="{ 'active': currentRoute === 'fichajeEmpleados' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -45,7 +43,29 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="hasRole(['employee'])" class="nav-item">
+            <router-link to="/fichaje" class="nav-link" :class="{ 'active': currentRoute === 'fichar' }">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ $t('menu.timesheet') }}</span>
+            </router-link>
+          </li>
+
+          <li v-if="hasRole(['employee'])" class="nav-item">
+            <router-link to="/fichaje/calendario" class="nav-link" :class="{ 'active': currentRoute === 'fichajeCalendario' }">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ $t('menu.timesheetCalendar') }}</span>
+            </router-link>
+          </li>
+
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/clientes" class="nav-link" :class="{ 'active': currentRoute === 'clientes' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -57,7 +77,7 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/proyectos" class="nav-link" :class="{ 'active': currentRoute === 'proyectos' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -68,7 +88,7 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/facturas" class="nav-link" :class="{ 'active': currentRoute === 'facturas' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -81,7 +101,7 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/productos" class="nav-link" :class="{ 'active': currentRoute === 'productos' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -92,11 +112,11 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-section">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-section">
             <span class="nav-section-title">{{ $t('menu.finances') }}</span>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/ingresos" class="nav-link" :class="{ 'active': currentRoute === 'ingresos' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -106,7 +126,8 @@
             </router-link>
           </li>
 
-          <li v-if="selectedCompany" class="nav-item">
+          <!-- Gastos - Solo para admin y client -->
+          <li v-if="selectedCompany && hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/gastos" class="nav-link" :class="{ 'active': currentRoute === 'gastos' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
@@ -120,7 +141,7 @@
             <span class="nav-section-title">{{ $t('menu.settings') }}</span>
           </li>
 
-          <li class="nav-item">
+          <li v-if="hasRole(['admin', 'client'])" class="nav-item">
             <div class="nav-link" @click="toggleCompanyDropdown" :class="{ 'active': currentRoute === 'empresa' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -138,7 +159,7 @@
             </ul>
           </li>
 
-          <li class="nav-item">
+          <li v-if="hasRole(['admin', 'client'])" class="nav-item">
             <router-link to="/ajustes" class="nav-link" :class="{ 'active': currentRoute === 'ajustes' }">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -157,6 +178,7 @@
               <span>{{ $t('menu.profile') }}</span>
             </router-link>
           </li>
+
           <li class="nav-item">
             <a href="#" class="nav-link" @click="logoutAction">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -192,12 +214,13 @@ export default {
   },
   computed: {
     ...mapState(useCounterStore, ['selectedCompany', 'companies']),
+    ...mapState(useAuthStore, ['user']),
     currentRoute() {
       return this.$route.name;
     }
   },
   async mounted() {
-    if (this.companies.length === 0) {
+    if (this.companies.length === 0 && this.hasRole(['admin', 'client'])) {
       await this.loadCompanies()
     }
     this.checkMobile();
@@ -229,6 +252,10 @@ export default {
     logoutAction() {
       this.logout()
       this.$router.push('/login');
+    },
+    hasRole(roles) {
+      if (!this.user || !this.user.role) return false;
+      return roles.includes(this.user.role);
     }
   }
 };
@@ -406,6 +433,8 @@ export default {
 .nav-link[href="/perfil"] .icon { color: #64748b; }
 .nav-link[href="#"] .icon { color: #dc2626; }
 .nav-link[href="/proyectos"] .icon { color: #8b5cf6; }
+.nav-link[href="/fichaje"] .icon { color: #10b981; }
+.nav-link[href="/fichaje/calendario"] .icon { color: #0ea5e9; }
 
 .nav-section {
   margin-top: 1.5rem;

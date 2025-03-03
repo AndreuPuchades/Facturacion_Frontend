@@ -1,64 +1,59 @@
 <template>
   <div class="employee-schedule-view">
-    <h1 class="title">Employee Schedule</h1>
-    <div class="month-navigation">
-      <button @click="previousMonth" class="nav-button">
-        <ChevronLeftIcon class="w-5 h-5" />
-      </button>
-      <span class="month-label">{{ currentMonthYear }}</span>
-      <button @click="nextMonth" class="nav-button">
-        <ChevronRightIcon class="w-5 h-5" />
-      </button>
-    </div>
+    <h1 class="calendar-title">{{ $t('employeeSchedule') }}</h1>
+    <div class="calendar-wrapper">
+      <div class="calendar-header">
+        <button class="nav-button" @click="previousMonth">
+          <ChevronLeftIcon class="w-5 h-5" />
+        </button>
+        <h2 class="month-title">{{ currentMonthName }}</h2>
+        <button class="nav-button" @click="nextMonth">
+          <ChevronRightIcon class="w-5 h-5" />
+        </button>
+      </div>
 
-    <div class="select-container">
-      <select
-          id="employee-select"
-          v-model="selectedEmployee"
-          @change="fetchScheduleData"
-      >
-        <option value="">Select an employee</option>
-        <option v-for="employee in employees" :key="employee.user.id" :value="employee.user.id">
-          {{ employee.user.name }}
-        </option>
-      </select>
-    </div>
+      <div class="select-container">
+        <select
+            id="employee-select"
+            v-model="selectedEmployee"
+            @change="fetchScheduleData"
+        >
+          <option value="">{{ $t('selectEmployee') }}</option>
+          <option v-for="employee in employees" :key="employee.user.id" :value="employee.user.id">
+            {{ employee.user.name }}
+          </option>
+        </select>
+      </div>
 
-    <div v-if="isLoading" class="loading">Loading...</div>
+      <div v-if="isLoading" class="loading">{{ $t('loading') }}</div>
 
-    <div v-else class="calendar-container">
-      <table>
-        <thead>
-        <tr>
-          <th v-for="day in weekDays" :key="day" class="day-column">
-            {{ day }}
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="week in calendarWeeks" :key="week[0].fullDate">
-          <td
-              v-for="day in week"
+      <div v-else class="calendar-grid">
+        <div class="weekdays-header">
+          <span v-for="day in weekDays" :key="day">{{ day }}</span>
+        </div>
+        <div class="days-grid">
+          <button
+              v-for="day in calendarDays"
               :key="day.fullDate"
-              class="calendar-cell"
+              class="day-cell"
               :class="{
-              'current-month': day.currentMonth,
-              'selected': isSelectedDate(day.fullDate),
-              'has-entries': hasEntries(day.fullDate)
-            }"
+                'bg-day-calendar': hasEntries(day.fullDate),
+                'current-month': day.currentMonth,
+                'other-month': !day.currentMonth,
+                'has-entries': hasEntries(day.fullDate),
+                'selected': isSelectedDate(day.fullDate),
+                'today': isToday(day.fullDate)
+              }"
               @click="selectDate(day.fullDate)"
           >
-            <div class="date">{{ day.date }}</div>
-            <div v-if="selectedEmployee && day.currentMonth" class="hours-badge">
-              {{ getEmployeeHours(selectedEmployee, day.fullDate) || '-' }}
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+            <span class="day-number">{{ new Date(day.fullDate).getDate() }}</span>
+            <div v-if="hasEntries(day.fullDate)" class="day-total-hours">{{ getDayTotalHours(day.fullDate) }}h</div>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div v-if="selectedDate && selectedEmployee" class="timesheet-entries">
+    <div v-if="selectedDate && selectedEmployee" class="day-details">
       <div class="details-header">
         <h2 class="details-title">{{ formatDisplayDate(selectedDate) }}</h2>
         <div class="total-hours" v-if="getDayTotalHours(selectedDate)">
@@ -67,25 +62,22 @@
         </div>
       </div>
 
-      <div v-if="isLoadingEntries" class="loading">Loading entries...</div>
+      <div v-if="isLoadingEntries" class="loading">{{ $t('loadingEntries') }}</div>
 
       <div v-else-if="dayEntries.length > 0" class="entries-list">
         <div v-for="(entry, index) in dayEntries" :key="entry.id" class="entry-card">
           <div class="entry-header">
-            <span :class="['entry-badge', entry.type]">{{ entry.type === 'check_in' ? 'Check In' : 'Check Out' }}</span>
+            <span :class="['entry-badge', entry.type]">{{ entry.type === 'check_in' ? $t('checkIn') : $t('checkOut') }}</span>
             <span class="entry-time">{{ formatTime(entry.time) }}</span>
           </div>
-          <div v-if="entry.type === 'check_out' && index > 0" class="shift-duration">
-            {{ formatDuration(getShiftDuration(index)) }}
-          </div>
           <div v-if="entry.notes" class="entry-notes">
-            Notes: {{ entry.notes }}
+            {{ $t('notes') }}: {{ entry.notes }}
           </div>
         </div>
       </div>
       <div v-else class="no-entries">
         <CalendarXIcon class="w-6 h-6" />
-        <p>No entries for this day</p>
+        <p>{{ $t('noEntriesForThisDay') }}</p>
       </div>
     </div>
   </div>
@@ -108,7 +100,7 @@ export default {
     return {
       currentDate: new Date(),
       selectedEmployee: null,
-      weekDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      weekDays: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
       selectedDate: null,
       dayEntries: [],
       isLoading: false,
@@ -117,36 +109,34 @@ export default {
   },
   computed: {
     ...mapState(useCounterStore, ['employees', 'employeeSchedules']),
-    currentMonthYear() {
-      return this.currentDate.toLocaleString('default', {
-        month: 'long',
-        year: 'numeric'
-      });
+    currentMonthName() {
+      return this.currentDate.toLocaleString(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' });
     },
-    calendarWeeks() {
+    calendarDays() {
       const year = this.currentDate.getFullYear();
       const month = this.currentDate.getMonth();
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
 
-      let date = new Date(firstDay);
-      date.setDate(firstDay.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
+      let start = new Date(firstDay);
+      start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
 
-      const weeks = [];
-      while (date <= lastDay || weeks.length < 6) {
-        const week = [];
-        for (let i = 0; i < 7; i++) {
-          week.push({
-            date: date.getDate(),
-            fullDate: this.formatDate(date),
-            currentMonth: date.getMonth() === month,
-          });
-          date.setDate(date.getDate() + 1);
-        }
-        weeks.push(week);
+      let end = new Date(lastDay);
+      end.setDate(end.getDate() + (7 - end.getDay()) % 7);
+
+      const days = [];
+      const current = new Date(start);
+
+      while (current <= end) {
+        days.push({
+          fullDate: this.formatDate(current),
+          currentMonth: current.getMonth() === month,
+        });
+        current.setDate(current.getDate() + 1);
       }
-      return weeks;
-    },
+
+      return days;
+    }
   },
   methods: {
     ...mapActions(useCounterStore, ['loadEmployees', 'getEmployeesMonthEntries', 'getEmployeeDayEntries']),
@@ -171,27 +161,22 @@ export default {
       this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 1);
       this.fetchScheduleData();
     },
-    getEmployeeName(employeeId) {
-      const employee = this.employees.find(e => e.id === employeeId);
-      return employee ? employee.user.name : 'Unknown';
+    hasEntries(date) {
+      if (!this.selectedEmployee) return false;
+      const employeeData = this.employeeSchedules[this.selectedEmployee];
+      if (!employeeData) return false;
+      const entry = employeeData.find(entry => entry.date === date);
+      return entry && entry.has_entries;
     },
-    getEmployeeHours(employeeId, fullDate) {
-      const employeeData = this.employeeSchedules[employeeId];
+    getDayTotalHours(date) {
+      if (!this.selectedEmployee) return '';
+      const employeeData = this.employeeSchedules[this.selectedEmployee];
       if (!employeeData) return '';
-
-      const entry = employeeData.find(entry => entry.date === fullDate);
+      const entry = employeeData.find(entry => entry.date === date);
       return entry ? entry.total_hours : '';
     },
     formatDate(date) {
-      let d = date;
-      if (typeof date === 'string') {
-        d = new Date(date);
-      }
-      if (!(d instanceof Date) || isNaN(d)) {
-        console.error('Invalid date:', date);
-        return 'Invalid Date';
-      }
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     },
     formatDisplayDate(dateString) {
       const date = new Date(dateString);
@@ -203,39 +188,20 @@ export default {
       });
     },
     formatTime(timeString) {
-      if (!timeString) return '';
-      const date = new Date(timeString);
-
-      if (isNaN(date.getTime())) {
-        console.error('Invalid date:', timeString);
-        return 'Invalid Time';
-      }
-
-      return date.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
+      return new Date(timeString).toLocaleTimeString(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', { hour: '2-digit', minute: '2-digit' });
     },
     async selectDate(date) {
-      this.selectedDate = this.formatDate(date);
+      this.selectedDate = date;
       if (this.selectedEmployee) {
-        await this.fetchDayEntries(this.selectedDate);
+        await this.fetchDayEntries(date);
       }
     },
     isSelectedDate(date) {
       return this.selectedDate === date;
     },
-    hasEntries(date) {
-      if (!this.selectedEmployee) return false;
-      const employeeData = this.employeeSchedules[this.selectedEmployee];
-      if (!employeeData) return false;
-      const entry = employeeData.find(entry => entry.date === date);
-      return entry && entry.has_entries;
-    },
-    getDayTotalHours(date) {
-      if (!this.selectedEmployee) return '';
-      return this.getEmployeeHours(this.selectedEmployee, date);
+    isToday(date) {
+      const today = this.formatDate(new Date());
+      return date === today;
     },
     async fetchDayEntries(date) {
       this.isLoadingEntries = true;
@@ -247,19 +213,6 @@ export default {
       } finally {
         this.isLoadingEntries = false;
       }
-    },
-    getShiftDuration(index) {
-      if (this.dayEntries[index].type === 'check_out' && index > 0) {
-        const checkOutTime = new Date(`1970-01-01T${this.dayEntries[index].time}`);
-        const checkInTime = new Date(`1970-01-01T${this.dayEntries[index - 1].time}`);
-        return (checkOutTime - checkInTime) / 1000;
-      }
-      return 0;
-    },
-    formatDuration(seconds) {
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      return `${hours}h ${minutes}m`;
     },
   },
   async mounted() {
@@ -286,133 +239,131 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: transparent;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.title {
-  font-size: 1.75rem;
+.calendar-title {
+  font-size: 2rem;
   font-weight: 600;
-  color: black;
+  color: #2c3e50;
   margin-bottom: 2rem;
   text-align: center;
 }
 
-.month-navigation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+.calendar-wrapper {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
   margin-bottom: 2rem;
-  padding: 0.5rem;
-  background-color: transparent;
-  border-radius: 6px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.month-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: capitalize;
 }
 
 .nav-button {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   padding: 0.5rem;
-  border: none;
-  background-color: #d3e5ff;
-  border-radius: 4px;
-  color: #1e3a8a;
-  transition: all 0.2s;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .nav-button:hover {
-  background-color: #c3d8ff;
-}
-
-.month-label {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: black;
+  background-color: #e2e8f0;
+  color: #3b82f6;
 }
 
 .select-container {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .select-container select {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #e3e3e3;
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: black;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  color: #2c3e50;
+  font-size: 1rem;
 }
 
-.calendar-container {
-  overflow-x: auto;
-  margin-bottom: 2rem;
+.weekdays-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.5rem;
 }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 2px;
-  background-color: #f1f2fa;
-}
-
-th {
-  padding: 0.75rem;
-  font-weight: 500;
-  color: black;
-  background-color: #e5f2ff;
+.weekdays-header span {
   text-align: center;
-}
-
-.day-column {
-  text-align: center;
-  width: 14.28%;
-}
-
-.calendar-cell {
+  font-weight: 600;
+  color: #64748b;
   padding: 0.5rem;
-  text-align: center;
-  color: #333333;
-  background-color: #ffffff;
-  position: relative;
-  height: 80px;
-  vertical-align: top;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  background-color: #f8fafc;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.calendar-cell:hover {
-  background-color: #eff6ff;
+.day-cell:hover {
+  background-color: #e2e8f0;
 }
 
-.calendar-cell.selected {
-  background-color: #bfdbfe;
+.day-cell.current-month {
+  color: #1e293b;
 }
 
-.calendar-cell.has-entries {
+.day-cell.other-month {
+  color: #94a3b8;
+}
+
+.day-cell.has-entries {
   font-weight: 600;
 }
 
-.calendar-cell:not(.current-month) {
-  opacity: 0.5;
+.day-cell.selected {
+  background-color: #3b82f6;
+  color: white;
 }
 
-.date {
-  font-weight: bold;
-  margin-bottom: 0.25rem;
+.day-cell.today {
+  border: 2px solid #3b82f6;
 }
 
-.hours-badge {
-  font-size: 0.875rem;
-  background-color: transparent;
-  color: #1823ff;
-  padding: 0.25rem;
-  border-radius: 4px;
-}
-
-.timesheet-entries {
-  background-color: transparent;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-top: 2rem;
+.day-details {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
 }
 
 .details-header {
@@ -425,14 +376,15 @@ th {
 .details-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: black;
+  color: #2c3e50;
+  text-transform: capitalize;
 }
 
 .total-hours {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #4545ff;
+  color: #3b82f6;
   font-weight: 600;
 }
 
@@ -443,7 +395,7 @@ th {
 }
 
 .entry-card {
-  background-color: #ffffff;
+  background-color: #f8fafc;
   border-radius: 12px;
   padding: 1rem;
 }
@@ -473,20 +425,20 @@ th {
 }
 
 .entry-time {
-  color: #595959;
+  color: #64748b;
   font-weight: 500;
 }
 
 .shift-duration {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: #1e3a8a;
+  color: #3b82f6;
 }
 
 .entry-notes {
   margin-top: 0.5rem;
   font-size: 0.875rem;
-  color: #1e3a8a;
+  color: #64748b;
 }
 
 .no-entries {
@@ -495,8 +447,20 @@ th {
   align-items: center;
   gap: 1rem;
   padding: 2rem;
-  color: #1e3a8a;
+  color: #64748b;
   text-align: center;
+}
+
+.day-total-hours {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 0.7rem;
+  color: #3b82f6;
+}
+
+.bg-day-calendar {
+  background-color: #dbeafe;
 }
 
 .loading {
@@ -504,7 +468,7 @@ th {
   justify-content: center;
   align-items: center;
   padding: 2rem;
-  color: #1e3a8a;
+  color: #3b82f6;
   font-weight: 600;
 }
 
@@ -513,23 +477,34 @@ th {
     padding: 1rem;
   }
 
-  .title {
-    font-size: 1.5rem;
+  .calendar-wrapper {
+    padding: 1rem;
   }
 
-  .month-navigation {
+  .month-title {
+    font-size: 1.25rem;
+  }
+
+  .day-cell {
     padding: 0.25rem;
-  }
-
-  .calendar-cell {
-    height: 60px;
-    font-size: 0.8rem;
   }
 
   .details-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .day-total-hours {
+    display: none;
+  }
+
+  .weekdays-header span {
+    font-size: 0.75rem;
+  }
+
+  .day-number {
+    font-size: 0.875rem;
   }
 }
 </style>
