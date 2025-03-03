@@ -56,6 +56,7 @@ const messages = {
     },
     menu: {
       dashboard: 'Dashboard',
+      employeesTimesheet: 'Horario de Empleados',
       clients: 'Clientes',
       projects: 'Proyectos',
       invoices: 'Facturas',
@@ -271,6 +272,7 @@ const messages = {
     },
     menu: {
       dashboard: 'Dashboard',
+      employeesTimesheet: 'Employees Timesheet',
       clients: 'Clients',
       projects: 'Projects',
       invoices: 'Invoices',

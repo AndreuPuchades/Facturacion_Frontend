@@ -6,6 +6,8 @@ import ExpensesRepository from "@/repositories/expenses.repository.js";
 import ProjectsRepository from "@/repositories/projects.repository.js";
 import ProductsRepository from "@/repositories/products.repository.js";
 import InvoicesRepository from "@/repositories/invoices.repository.js";
+import EmployeeRepository from "@/repositories/employee.repository.js";
+import TimesheetRepository from "@/repositories/timesheet.repository.js";
 
 export const useCounterStore = defineStore("counter", {
   state(){
@@ -21,6 +23,8 @@ export const useCounterStore = defineStore("counter", {
       product_categories: [],
       taxes: [],
       invoices: [],
+      employees: [],
+      employeeSchedules: {},
       selectedCompany: JSON.parse(localStorage.getItem("selectedCompany")) || null
     }
   },
@@ -80,6 +84,23 @@ export const useCounterStore = defineStore("counter", {
     async loadInvoices(params = {}) {
       const repositoryInvoices = new InvoicesRepository()
       this.invoices = await repositoryInvoices.getAllInvoices(params)
+    },
+    async loadEmployees() {
+      const repositoryEmployees = new EmployeeRepository()
+      const response = await repositoryEmployees.getAllEmployees()
+      this.employees = response.data
+    },
+    async getEmployeesMonthEntries(year, month, employeeId) {
+      const timesheetRepository = new TimesheetRepository();
+      const response = await timesheetRepository.getEmployeesMonthEntries(year, month, employeeId);
+      this.employeeSchedules = {
+        [employeeId]: response.entries
+      };
+    },
+    async getEmployeeDayEntries(employeeId, date) {
+      const timesheetRepository = new TimesheetRepository();
+      const response = await timesheetRepository.getEmployeeDayEntries(employeeId, date);
+      return response.entries
     }
   }
 });

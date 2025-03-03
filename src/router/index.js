@@ -14,6 +14,7 @@ import ProductsView from "@/views/lists/ProductsView.vue";
 import InvoicesView from "@/views/lists/InvoicesView.vue";
 import TimesheetView from "@/views/TimesheetView.vue";
 import TimesheetCalendarView from "@/views/TimesheetCalendarView.vue";
+import EmployeeScheduleView from "@/views/EmployeeScheduleView.vue";
 
 const routes = [
     {
@@ -67,6 +68,12 @@ const routes = [
         path: '/gastos',
         name: 'gastos',
         component: ExpensesView,
+        meta: { requiresAuth: true, requiresCompany: true }
+    },
+    {
+        path: '/employees-timesheet',
+        name: 'employeesTimesheet',
+        component: EmployeeScheduleView,
         meta: { requiresAuth: true, requiresCompany: true }
     },
     {

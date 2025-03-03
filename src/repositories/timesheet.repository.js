@@ -39,4 +39,12 @@ export default class TimesheetRepository extends BaseRepository {
   async getMonthEntries(year, month) {
     return this.fetchWithAuth(`/timesheet/month-entries/${year}/${month}`);
   }
+
+  async getEmployeesMonthEntries(year, month, employeeId) {
+    return await this.fetchWithAuth(`/timesheet/employees-month-entries/${year}/${month}?employee_id=${employeeId}`);
+  }
+
+  async getEmployeeDayEntries(employeeId, date) {
+    return await this.fetchWithAuth(`/timesheet/employee-day-entries?employee_id=${employeeId}&date=${date}`);
+  }
 }

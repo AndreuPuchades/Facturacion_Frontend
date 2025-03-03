@@ -1,6 +1,7 @@
 <template>
   <div class="timesheet-view">
     <h1 class="timesheet-title">{{ $t('timesheet') }}</h1>
+
     <div class="map-container" v-show="showMap">
       <div id="map" ref="mapRef"></div>
       <div class="map-overlay">
@@ -8,11 +9,23 @@
           <span class="location-label">{{ $t('currentLocation') }}:</span>
           <span class="location-coordinates">{{ formattedLocation }}</span>
         </div>
+        <div v-if="isCheckedIn" class="timer-container">
+          <div class="timer-circle">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+              <circle class="timer-background" cx="50" cy="50" r="45"></circle>
+              <circle class="timer-progress" cx="50" cy="50" r="45" :style="timerProgressStyle"></circle>
+            </svg>
+            <div class="timer-content">
+              <span class="timer-value">{{ formattedElapsedTime }}</span>
+            </div>
+          </div>
+        </div>
         <button
             @click="performCheckInOut"
             :disabled="isLoading"
             class="btn-check-in"
         >
+          <span v-if="isLoading" class="loading-spinner-small"></span>
           <span class="btn-text">{{ isLoading ? $t('loading') : (isCheckedIn ? $t('checkOut') : $t('checkIn')) }}</span>
         </button>
       </div>
@@ -21,10 +34,13 @@
       {{ message }}
     </p>
 
-    <!-- Lista de registros del día -->
     <div class="today-entries">
       <h2 class="entries-title">{{ $t('todayEntries') }}</h2>
-      <ul class="entries-list" v-if="todayEntries.length > 0">
+      <div v-if="isLoading" class="loading-overlay-local">
+        <div class="loading-spinner"></div>
+        <p>{{ $t('loading') }}</p>
+      </div>
+      <ul v-else class="entries-list" v-if="todayEntries.length > 0">
         <li v-for="(entry, index) in todayEntries" :key="entry.id" class="entry-item">
           <div class="entry-details">
             <span :class="['entry-type', entry.type === 'check_in' ? 'check-in' : 'check-out']">
@@ -35,19 +51,17 @@
               <MapIcon class="h-5 w-5" />
             </button>
           </div>
-          <span v-if="entry.type === 'check_out'" class="entry-duration">{{ formatDurationPrecise(getEntryDuration(index)) }}</span>
+          <span v-if="entry.type === 'check-out'" class="entry-duration">{{ formatDurationPrecise(getEntryDuration(index)) }}</span>
         </li>
       </ul>
-      <p v-else class="no-entries">{{ $t('noEntriesForToday') }}</p>
+      <p v-if="!isLoading && todayEntries.length <= 0" class="no-entries">{{ $t('noEntriesForToday') }}</p>
 
-      <!-- Total de horas trabajadas -->
       <div v-if="todayEntries.length > 0" class="total-hours">
         <h3>{{ $t('totalHoursWorked') }}</h3>
         <span class="total-duration">{{ formatDurationPrecise(totalHoursWorked) }}</span>
       </div>
     </div>
 
-    <!-- Modal para el mini mapa -->
     <Teleport to="body">
       <div v-if="showMiniMap" class="mini-map-modal" @click.self="closeMiniMap">
         <div class="mini-map-container">
@@ -73,7 +87,8 @@ export default {
   data() {
     return {
       timesheetRepo: new TimesheetRepository(),
-      isLoading: false,
+      isLoading: true,
+      isPerformingAction: false,
       message: '',
       error: false,
       showMap: false,
@@ -88,6 +103,9 @@ export default {
       miniMap: null,
       miniMarker: null,
       selectedEntry: null,
+      lastEntryTime: null,
+      elapsedTime: 0,
+      timerInterval: null,
     };
   },
   computed: {
@@ -105,31 +123,58 @@ export default {
         return total;
       }, 0);
     },
+    formattedElapsedTime() {
+      return this.formatDurationPrecise(this.elapsedTime);
+    },
+    timerProgressStyle() {
+      const progress = (this.elapsedTime % 3600) / 3600;
+      const dashArray = 2 * Math.PI * 45;
+      const dashOffset = dashArray * (1 - progress);
+      return {
+        strokeDasharray: `${dashArray}`,
+        strokeDashoffset: `${dashOffset}`,
+      };
+    },
   },
   methods: {
     initializeGeolocation() {
-      if ('geolocation' in navigator) {
-        this.watchId = navigator.geolocation.watchPosition(
-            this.handlePositionUpdate,
-            this.handleLocationError,
-            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-        );
-      } else {
-        this.handleLocationError({ message: 'Geolocation not supported' });
-      }
+      return new Promise((resolve, reject) => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+                this.latitude = position.coords.latitude;
+                this.longitude = position.coords.longitude;
+                this.showMap = true;
+                this.$nextTick(() => {
+                  this.initMap();
+                  this.watchPosition();
+                });
+                resolve();
+              },
+              (error) => {
+                this.handleLocationError(error);
+                reject(error);
+              },
+              { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          );
+        } else {
+          const error = new Error('Geolocation not supported');
+          this.handleLocationError(error);
+          reject(error);
+        }
+      });
+    },
+    watchPosition() {
+      this.watchId = navigator.geolocation.watchPosition(
+          this.handlePositionUpdate,
+          this.handleLocationError,
+          { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      );
     },
     handlePositionUpdate(position) {
       this.latitude = position.coords.latitude;
       this.longitude = position.coords.longitude;
-
-      if (!this.showMap) {
-        this.showMap = true;
-        this.$nextTick(() => {
-          this.initMap();
-        });
-      } else {
-        this.updateMarkerPosition();
-      }
+      this.updateMarkerPosition();
     },
     handleLocationError(error) {
       console.error('Geolocation error:', error);
@@ -144,12 +189,19 @@ export default {
 
       this.map = L.map(this.$refs.mapRef, {
         zoomControl: false,
-        attributionControl: false
-      }).setView([this.latitude, this.longitude], 15);
+        attributionControl: false,
+        dragging: !L.Browser.mobile,
+        tap: !L.Browser.mobile
+      }).setView([this.latitude, this.longitude], 17);
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
+        attribution: '©OpenStreetMap, ©CartoDB',
+        subdomains: 'abcd',
+        maxZoom: 19
       }).addTo(this.map);
+
+      this.map.setMinZoom(3);
+      this.map.setMaxZoom(18);
 
       this.marker = L.circleMarker([this.latitude, this.longitude], {
         color: '#3b82f6',
@@ -162,11 +214,11 @@ export default {
       if (this.marker && this.map) {
         const newLatLng = L.latLng(this.latitude, this.longitude);
         this.marker.setLatLng(newLatLng);
-        this.map.setView(newLatLng, 15, { animate: true });
+        this.map.setView(newLatLng, 17, { animate: true });
       }
     },
     async performCheckInOut() {
-      this.isLoading = true;
+      this.isPerformingAction = true;
       this.message = '';
       this.error = false;
 
@@ -175,23 +227,31 @@ export default {
           await this.timesheetRepo.checkOut(this.latitude, this.longitude);
           this.message = 'Check-out successful';
           this.isCheckedIn = false;
+          this.stopTimer();
+          this.elapsedTime = 0;
         } else {
-          await this.timesheetRepo.checkIn(this.latitude, this.longitude);
+          const response = await this.timesheetRepo.checkIn(this.latitude, this.longitude);
           this.message = 'Check-in successful';
           this.isCheckedIn = true;
+          this.lastEntryTime = new Date(response.time);
+          this.startTimer();
         }
         await this.fetchTodayEntries();
       } catch (err) {
         this.error = true;
         this.message = `Error: ${err.message}`;
       } finally {
-        this.isLoading = false;
+        this.isPerformingAction = false;
       }
     },
     async fetchLastStatus() {
       try {
         const response = await this.timesheetRepo.getLastStatus();
         this.isCheckedIn = response.isCheckedIn;
+        if (this.isCheckedIn && response.lastEntry) {
+          this.lastEntryTime = new Date(response.lastEntry.time);
+          this.startTimer();
+        }
       } catch (error) {
         console.error('Error fetching last status:', error);
       }
@@ -201,8 +261,26 @@ export default {
         const today = new Date().toISOString().split('T')[0];
         const response = await this.timesheetRepo.getEntries(today);
         this.todayEntries = response.entries;
+        this.updateCheckedInStatus();
       } catch (error) {
         console.error('Error fetching today\'s entries:', error);
+      }
+    },
+    updateCheckedInStatus() {
+      if (this.todayEntries.length > 0) {
+        const lastEntry = this.todayEntries[this.todayEntries.length - 1];
+        this.isCheckedIn = lastEntry.type === 'check_in';
+        if (this.isCheckedIn) {
+          this.lastEntryTime = new Date(lastEntry.time);
+          this.startTimer();
+        } else {
+          this.stopTimer();
+          this.elapsedTime = 0;
+        }
+      } else {
+        this.isCheckedIn = false;
+        this.stopTimer();
+        this.elapsedTime = 0;
       }
     },
     formatTime(time) {
@@ -217,10 +295,11 @@ export default {
       return 0;
     },
     formatDurationPrecise(seconds) {
+      if (seconds === 0) return '00:00:00';
       const h = Math.floor(seconds / 3600);
       const m = Math.floor((seconds % 3600) / 60);
       const s = Math.floor(seconds % 60);
-      return `${h}h ${m}m ${s}s`;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     },
     openMiniMap(entry) {
       this.selectedEntry = entry;
@@ -238,12 +317,19 @@ export default {
 
       this.miniMap = L.map(this.$refs.miniMapRef, {
         zoomControl: false,
-        attributionControl: false
-      }).setView([this.selectedEntry.latitude, this.selectedEntry.longitude], 15);
+        attributionControl: false,
+        dragging: false,
+        tap: false
+      }).setView([this.selectedEntry.latitude, this.selectedEntry.longitude], 17);
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
+        attribution: '©OpenStreetMap, ©CartoDB',
+        subdomains: 'abcd',
+        maxZoom: 19
       }).addTo(this.miniMap);
+
+      this.miniMap.setMinZoom(3);
+      this.miniMap.setMaxZoom(18);
 
       this.miniMarker = L.circleMarker([this.selectedEntry.latitude, this.selectedEntry.longitude], {
         color: '#3b82f6',
@@ -259,11 +345,36 @@ export default {
         this.miniMap = null;
       }
     },
+    startTimer() {
+      this.stopTimer();
+      this.updateElapsedTime();
+      this.timerInterval = setInterval(this.updateElapsedTime, 1000);
+    },
+    stopTimer() {
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+      }
+    },
+    updateElapsedTime() {
+      if (this.lastEntryTime) {
+        this.elapsedTime = Math.floor((new Date() - this.lastEntryTime) / 1000);
+      }
+    },
   },
-  mounted() {
-    this.initializeGeolocation();
-    this.fetchLastStatus();
-    this.fetchTodayEntries();
+  async mounted() {
+    try {
+      await Promise.all([
+        this.initializeGeolocation(),
+        this.fetchTodayEntries()
+      ]);
+    } catch (error) {
+      console.error('Error initializing data:', error);
+      this.error = true;
+      this.message = 'Error loading data. Please try again.';
+    } finally {
+      this.isLoading = false;
+    }
   },
   beforeUnmount() {
     if (this.watchId) {
@@ -275,6 +386,7 @@ export default {
     if (this.miniMap) {
       this.miniMap.remove();
     }
+    this.stopTimer();
   },
 };
 </script>
@@ -346,9 +458,55 @@ export default {
   font-family: 'SF Mono', 'Courier New', Courier, monospace;
 }
 
+.timer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.timer-circle {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.timer-svg {
+  transform: rotate(-90deg);
+}
+
+.timer-background {
+  fill: none;
+  stroke: #e2e8f0;
+  stroke-width: 6;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: #a5b4fc;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.timer-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-value {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
 .btn-check-in {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #a5b4fc;
+  color: #1e293b;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -362,9 +520,9 @@ export default {
 }
 
 .btn-check-in:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: #818cf8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(165, 180, 252, 0.4);
 }
 
 .btn-check-in:active:not(:disabled) {
@@ -372,7 +530,7 @@ export default {
 }
 
 .btn-check-in:disabled {
-  background-color: #94a3b8;
+  background-color: #e2e8f0;
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -387,8 +545,8 @@ export default {
 }
 
 .text-success {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .text-danger {
@@ -439,20 +597,14 @@ export default {
 }
 
 .check-in {
-  color: #166534;
-  background-color: #dcfce7;
+  color: #065f46;
+  background-color: #d1fae5;
 }
 
 .check-out {
   color: #991b1b;
   background-color: #fee2e2;
 }
-
-/* .entry-type {
-  font-weight: 600;
-  color: #3b82f6;
-  min-width: 120px;
-} */
 
 .btn-mini-map {
   display: flex;
@@ -616,4 +768,43 @@ export default {
     height: 350px;
   }
 }
+
+.loading-overlay-local {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #a5b4fc;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner-small {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #a5b4fc;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+:deep(.leaflet-control-container) {
+  display: none;
+}
 </style>
+
