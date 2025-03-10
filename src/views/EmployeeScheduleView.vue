@@ -165,15 +165,23 @@ export default {
       if (!this.selectedEmployee) return false;
       const employeeData = this.employeeSchedules[this.selectedEmployee];
       if (!employeeData) return false;
-      const entry = employeeData.find(entry => entry.date === date);
+
+      const entry = employeeData.find(entry => this.normalizeDate(entry.date) === date);
       return entry && entry.has_entries;
     },
     getDayTotalHours(date) {
       if (!this.selectedEmployee) return '';
       const employeeData = this.employeeSchedules[this.selectedEmployee];
       if (!employeeData) return '';
-      const entry = employeeData.find(entry => entry.date === date);
+
+      const entry = employeeData.find(entry => this.normalizeDate(entry.date) === date);
       return entry ? entry.total_hours : '';
+    },
+    normalizeDate(dateString) {
+      if (typeof dateString === 'string' && dateString.includes('T')) {
+        return dateString.split('T')[0];
+      }
+      return dateString;
     },
     formatDate(date) {
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
