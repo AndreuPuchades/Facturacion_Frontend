@@ -45,16 +45,16 @@
           <label>{{ $t('expenses.filters.dateRange') }}</label>
           <div class="date-range">
             <input v-model="filters.date_from" type="date" class="date-input" />
-            <span>{{ $t('expenses.filters.to') }}</span>
+            <span>{{ $t('common.to') }}</span>
             <input v-model="filters.date_to" type="date" class="date-input" />
           </div>
         </div>
         <div class="filter-group">
           <label>{{ $t('expenses.filters.amountRange') }}</label>
           <div class="amount-range">
-            <input v-model="filters.amount_min" type="number" :placeholder="$t('expenses.filters.min')" class="amount-input" />
-            <span>{{ $t('expenses.filters.to') }}</span>
-            <input v-model="filters.amount_max" type="number" :placeholder="$t('expenses.filters.max')" class="amount-input" />
+            <input v-model="filters.amount_min" type="number" :placeholder="$t('common.min')" class="amount-input" />
+            <span>{{ $t('common.to') }}</span>
+            <input v-model="filters.amount_max" type="number" :placeholder="$t('common.max')" class="amount-input" />
           </div>
         </div>
         <div class="filter-actions">

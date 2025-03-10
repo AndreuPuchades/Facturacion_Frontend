@@ -7,11 +7,11 @@
           <div class="icon-container">
             <Briefcase class="icon" />
           </div>
-          <h1>Gestión de Proyectos</h1>
+          <h1>{{ $t('projects.title') }}</h1>
         </div>
         <button class="add-button" @click="openAddProjectPopup">
           <PlusCircle class="icon" />
-          <span>Nuevo Proyecto</span>
+          <span>{{ $t('projects.new') }}</span>
         </button>
       </div>
 
@@ -21,19 +21,19 @@
           <input
               v-model="filters.name"
               type="text"
-              placeholder="Buscar proyecto..."
+              :placeholder="$t('projects.search')"
               class="search-input"
           />
         </div>
         <select v-model="filters.client" class="category-select">
-          <option value="">Todos los clientes</option>
+          <option value="">{{ $t('projects.allClients') }}</option>
           <option v-for="client in clients" :key="client.id" :value="client.id">
             {{ client.name }}
           </option>
         </select>
         <button @click="isFilterOpen = !isFilterOpen" class="filter-button">
           <Filter class="icon" />
-          {{ isFilterOpen ? 'Ocultar filtros' : 'Mostrar filtros' }}
+          {{ isFilterOpen ? $t('projects.hideFilters') : $t('projects.showFilters') }}
         </button>
         <button @click="searchProjects" class="search-button">
           <Search class="icon" />
@@ -42,33 +42,33 @@
 
       <div v-if="isFilterOpen" class="advanced-filters">
         <div class="filter-group">
-          <label>Estado</label>
+          <label>{{ $t('projects.titleStatus') }}</label>
           <select v-model="filters.status" class="filter-select">
-            <option value="">Todos los estados</option>
-            <option value="not_started">No iniciado</option>
-            <option value="in_progress">En progreso</option>
-            <option value="completed">Completado</option>
-            <option value="on_hold">En espera</option>
+            <option value="">{{ $t('projects.allStatuses') }}</option>
+            <option value="not_started">{{ $t('projects.status.notStarted') }}</option>
+            <option value="in_progress">{{ $t('projects.status.inProgress') }}</option>
+            <option value="completed">{{ $t('projects.status.completed') }}</option>
+            <option value="on_hold">{{ $t('projects.status.onHold') }}</option>
           </select>
         </div>
         <div class="filter-group">
-          <label>Rango de fechas de inicio</label>
+          <label>{{ $t('projects.startDateRange') }}</label>
           <div class="date-range">
             <input v-model="filters.start_date" type="date" class="date-input" />
-            <span>a</span>
+            <span>{{ $t('common.to') }}</span>
             <input v-model="filters.end_date" type="date" class="date-input" />
           </div>
         </div>
         <div class="filter-group">
-          <label>Rango de presupuesto</label>
+          <label>{{ $t('projects.budgetRange') }}</label>
           <div class="amount-range">
-            <input v-model="filters.budget_min" type="number" placeholder="Mín" class="amount-input" />
-            <span>a</span>
-            <input v-model="filters.budget_max" type="number" placeholder="Máx" class="amount-input" />
+            <input v-model="filters.budget_min" type="number" :placeholder="$t('projects.min')" class="amount-input" />
+            <span>{{ $t('common.to') }}</span>
+            <input v-model="filters.budget_max" type="number" :placeholder="$t('projects.max')" class="amount-input" />
           </div>
         </div>
         <div class="filter-actions">
-          <button @click="resetFilters" class="reset-filters-button">Restablecer filtros</button>
+          <button @click="resetFilters" class="reset-filters-button">{{ $t('projects.resetFilters') }}</button>
         </div>
       </div>
 
@@ -126,15 +126,15 @@
             :disabled="!projects.links.prev"
             class="pagination-button"
         >
-          Previous
+          {{ $t('common.previous') }}
         </button>
-        <span class="page-info">Page {{ projects.meta.current_page }} of {{ projects.meta.last_page }}</span>
+        <span class="page-info">{{ $t('common.page') }} {{ projects.meta.current_page }} {{ $t('common.of') }} {{ projects.meta.last_page }}</span>
         <button
             @click="changePage(projects.meta.current_page + 1)"
             :disabled="!projects.links.next"
             class="pagination-button"
         >
-          Next
+          {{ $t('common.next') }}
         </button>
       </div>
     </div>
@@ -238,7 +238,7 @@ export default {
     },
     formatDate(date) {
       if (!date) return 'N/A'
-      return new Date(date).toLocaleDateString('es-ES', {
+      return new Date(date).toLocaleDateString(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
@@ -246,19 +246,22 @@ export default {
     },
     formatCurrency(amount) {
       if (amount === null) return 'N/A'
-      return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
+      return new Intl.NumberFormat(this.$i18n.locale === 'es' ? 'es-ES' : 'en-US', {
+        style: 'currency',
+        currency: this.$i18n.locale === 'es' ? 'EUR' : 'USD'
+      }).format(amount)
     },
     getStatusText(status) {
       const statusMap = {
-        'not_started': 'No iniciado',
-        'in_progress': 'En progreso',
-        'completed': 'Completado',
-        'on_hold': 'En espera'
+        'not_started': this.$t('projects.status.notStarted'),
+        'in_progress': this.$t('projects.status.inProgress'),
+        'completed': this.$t('projects.status.completed'),
+        'on_hold': this.$t('projects.status.onHold')
       }
       return statusMap[status] || status
     },
     getClientName(client) {
-      return client ? client.name : 'No tiene cliente'
+      return client ? client.name : this.$t('projects.noClient')
     },
     async editProject(id) {
       this.isLoading = true
@@ -275,7 +278,7 @@ export default {
       }
     },
     async deleteProject(id) {
-      if (confirm('¿Estás seguro de que quieres eliminar este proyecto?')) {
+      if (confirm(this.$t('projects.confirmDelete'))) {
         this.isLoading = true
         try {
           await this.projectsRepository.removeProject(id)
@@ -318,6 +321,7 @@ export default {
 </script>
 
 <style scoped>
+/* Styles remain unchanged */
 .projects-layout {
   display: flex;
   min-height: 100vh;

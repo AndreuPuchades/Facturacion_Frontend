@@ -45,16 +45,16 @@
           <label>{{ $t('incomes.filters.dateRange') }}</label>
           <div class="date-range">
             <input v-model="filters.date_from" type="date" class="date-input" />
-            <span>{{ $t('incomes.filters.to') }}</span>
+            <span>{{ $t('common.to') }}</span>
             <input v-model="filters.date_to" type="date" class="date-input" />
           </div>
         </div>
         <div class="filter-group">
           <label>{{ $t('incomes.filters.amountRange') }}</label>
           <div class="amount-range">
-            <input v-model="filters.amount_min" type="number" :placeholder="$t('incomes.filters.min')" class="amount-input" />
-            <span>{{ $t('incomes.filters.to') }}</span>
-            <input v-model="filters.amount_max" type="number" :placeholder="$t('incomes.filters.max')" class="amount-input" />
+            <input v-model="filters.amount_min" type="number" :placeholder="$t('common.min')" class="amount-input" />
+            <span>{{ $t('common.to') }}</span>
+            <input v-model="filters.amount_max" type="number" :placeholder="$t('common.max')" class="amount-input" />
           </div>
         </div>
         <div class="filter-actions">
@@ -197,10 +197,10 @@
         <div v-if="newIncome.is_recurring" class="form-group">
           <label>{{ $t('incomes.form.recurrenceFrequency') }}</label>
           <select v-model="newIncome.recurrence_frequency" required>
-            <option value="daily">{{ $t('incomes.form.daily') }}</option>
-            <option value="weekly">{{ $t('incomes.form.weekly') }}</option>
-            <option value="monthly">{{ $t('incomes.form.monthly') }}</option>
-            <option value="yearly">{{ $t('incomes.form.yearly') }}</option>
+            <option value="daily">{{ $t('common.daily') }}</option>
+            <option value="weekly">{{ $t('common.weekly') }}</option>
+            <option value="monthly">{{ $t('common.monthly') }}</option>
+            <option value="yearly">{{ $t('common.yearly') }}</option>
           </select>
         </div>
 

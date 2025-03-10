@@ -150,6 +150,40 @@ const messages = {
         message: '¿Estás seguro de que quieres eliminar esta empresa?'
       }
     },
+    incomes: {
+      title: 'Ingresos',
+      new: 'Nuevo Ingreso',
+      edit: 'Editar Ingreso',
+      closeForm: 'Cerrar Formulario',
+      search: 'Buscar ingreso...',
+      allCategories: 'Todas las categorías',
+      filters: {
+        show: 'Mostrar filtros',
+        hide: 'Ocultar filtros',
+        reset: 'Restablecer filtros',
+        dateRange: 'Rango de fechas',
+        amountRange: 'Rango de importes',
+        recurring: 'Solo ingresos recurrentes',
+        taxDeductible: 'Solo ingresos deducibles'
+      },
+      form: {
+        amount: 'Cantidad',
+        date: 'Fecha',
+        description: 'Descripción',
+        category: 'Categoría',
+        selectCategory: 'Selecciona una categoría',
+        taxDeductible: 'El impuesto es deducible',
+        recurring: 'Es recurrente',
+        recurrenceFrequency: 'Frecuencia de recurrencia'
+      },
+      deleteConfirmation: {
+        title: 'Confirmar eliminación',
+        message: '¿Estás seguro de que quieres eliminar este ingreso?'
+      },
+      noDescription: 'Sin descripción',
+      save: 'Guardar Gasto',
+      update: 'Actualizar Gasto'
+    },
     expenses: {
       title: 'Gastos',
       new: 'Nuevo Gasto',
@@ -200,6 +234,45 @@ const messages = {
       termsOfService: 'Términos de servicio',
       privacyPolicy: 'Política de privacidad',
       copyright: '© {year} FacturaApp. Todos los derechos reservados.'
+    },
+    projects: {
+      title: 'Gestión de Proyectos',
+      new: 'Nuevo Proyecto',
+      search: 'Buscar proyecto...',
+      allClients: 'Todos los clientes',
+      hideFilters: 'Ocultar filtros',
+      showFilters: 'Mostrar filtros',
+      titleStatus: 'Estado',
+      allStatuses: 'Todos los estados',
+      startDateRange: 'Rango de fechas de inicio',
+      budgetRange: 'Rango de presupuesto',
+      min: 'Mín',
+      max: 'Máx',
+      resetFilters: 'Restablecer filtros',
+      noClient: 'No tiene cliente',
+      confirmDelete: '¿Estás seguro de que quieres eliminar este proyecto?',
+      form: {
+        title: {
+          edit: 'Editar Proyecto',
+          add: 'Añadir Nuevo Proyecto'
+        },
+        projectName: 'Nombre del Proyecto',
+        client: 'Cliente',
+        selectClient: 'Seleccionar Cliente',
+        description: 'Descripción',
+        startDate: 'Fecha de Inicio',
+        endDate: 'Fecha de Fin',
+        status: 'Estado',
+        budget: 'Presupuesto',
+        update: 'Actualizar',
+        create: 'Crear'
+      },
+      status: {
+        notStarted: 'No iniciado',
+        inProgress: 'En progreso',
+        completed: 'Completado',
+        onHold: 'En espera'
+      }
     },
     timesheet: 'Registro de Horas',
     checkIn: 'Iniciar Jornada',
@@ -374,6 +447,40 @@ const messages = {
         message: 'Are you sure you want to delete this company?'
       }
     },
+    incomes: {
+      title: 'Incomes',
+      new: 'New Income',
+      edit: 'Edit Income',
+      closeForm: 'Close Form',
+      search: 'Search income...',
+      allCategories: 'All categories',
+      filters: {
+        show: 'Show filters',
+        hide: 'Hide filters',
+        reset: 'Reset filters',
+        dateRange: 'Date range',
+        amountRange: 'Amount range',
+        recurring: 'Only recurring incomes',
+        taxDeductible: 'Only tax-deductible incomes'
+      },
+      form: {
+        amount: 'Amount',
+        date: 'Date',
+        description: 'Description',
+        category: 'Category',
+        selectCategory: 'Select a category',
+        taxDeductible: 'Tax is deductible',
+        recurring: 'Is recurring',
+        recurrenceFrequency: 'Recurrence frequency'
+      },
+      deleteConfirmation: {
+        title: 'Confirm deletion',
+        message: 'Are you sure you want to delete this income?'
+      },
+      noDescription: 'No description',
+      save: 'Save Expense',
+      update: 'Update Expense'
+    },
     expenses: {
       title: 'Expenses',
       new: 'New Expense',
@@ -424,6 +531,45 @@ const messages = {
       termsOfService: 'Terms of Service',
       privacyPolicy: 'Privacy Policy',
       copyright: '© {year} FacturaApp. All rights reserved.'
+    },
+    projects: {
+      title: 'Project Management',
+      new: 'New Project',
+      search: 'Search project...',
+      allClients: 'All clients',
+      hideFilters: 'Hide filters',
+      showFilters: 'Show filters',
+      titleStatus: 'Status',
+      allStatuses: 'All statuses',
+      startDateRange: 'Start date range',
+      budgetRange: 'Budget range',
+      min: 'Min',
+      max: 'Max',
+      resetFilters: 'Reset filters',
+      noClient: 'No client',
+      confirmDelete: 'Are you sure you want to delete this project?',
+      form: {
+        title: {
+          edit: 'Edit Project',
+          add: 'Add New Project'
+        },
+        projectName: 'Project Name',
+        client: 'Client',
+        selectClient: 'Select Client',
+        description: 'Description',
+        startDate: 'Start Date',
+        endDate: 'End Date',
+        status: 'Status',
+        budget: 'Budget',
+        update: 'Update',
+        create: 'Create'
+      },
+      status: {
+        notStarted: 'Not started',
+        inProgress: 'In progress',
+        completed: 'Completed',
+        onHold: 'On hold'
+      }
     },
     timesheet: 'Timesheet',
     checkIn: 'Check In',
